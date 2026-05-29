@@ -3,7 +3,7 @@
 **JavaQuest** es una plataforma web educativa, interactiva y gamificada diseñada para enseñar los fundamentos de la programación en Java desde cero. Los estudiantes pueden avanzar por distintos "mundos", superar retos de código y competir por el primer lugar en el ranking.
 
 ![JavaQuest Preview](https://cdn.imgchest.com/files/f6b27dfcdd01.png)
-> *Nota: Reemplaza el enlace de la imagen de arriba con una captura real de tu proyecto.*
+> *Imagen de previsualización.*
 
 ---
 
