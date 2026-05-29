@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JavaQuest – Aprende Java Jugando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════ CSS VARIABLES (VIBRANTES) ═══════════════ */
+:root {
+  --java: #ff9800; --java2: #ff5722;
+  --accent: #00ffcc; --accent2: #00bfff; --accent3: #ff007f; --accent4: #ff3366;
+  
+  /* Fondos oscuros con tonos azulados/púrpuras profundos */
+  --bg-grad: linear-gradient(-45deg, #090a0f, #10162a, #1a0b2e, #0f2027);
+  --bg3: rgba(13, 22, 41, 0.7);
+  
+  /* Glassmorphism para las tarjetas */
+  --surface: rgba(17, 24, 39, 0.65); 
+  --surface2: rgba(26, 37, 56, 0.75); 
+  --surface3: rgba(30, 45, 69, 0.85);
+  
+  --border: rgba(0, 255, 204, 0.5); 
+  --border2: rgba(0, 180, 216, 0.4);
+  
+  --text: #ffffff; --text-muted: #a3c2d1;
+  --shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+  --glow: 0 0 25px rgba(0, 255, 204, 0.4), inset 0 0 15px rgba(0, 255, 204, 0.1);
+  --glow-java: 0 0 25px rgba(255, 152, 0, 0.4);
+  
+  --trans: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --font-ui: 'Outfit', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+  --radius: 22px; --radius-sm: 12px;
+}
+
+[data-theme="light"] {
+  --bg-grad: linear-gradient(-45deg, #f0f4ff, #e6ecf8, #dce4f5, #e0c3fc);
+  --bg3: rgba(220, 228, 245, 0.7);
+  --surface: rgba(255, 255, 255, 0.7); 
+  --surface2: rgba(245, 247, 255, 0.8); 
+  
+  --border: rgba(0, 180, 216, 0.6);
+  --text: #0d1629; --text-muted: #334b61;
+  --shadow: 0 15px 40px rgba(0, 180, 216, 0.25);
+  --glow: 0 0 30px rgba(0, 212, 170, 0.3);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+/* ── ANIMACIÓN DEL FONDO ── */
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-grad);
+  background-size: 400% 400%;
+  animation: moveBackground 15s ease infinite;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: color 0.3s ease;
+}
+
+@keyframes moveBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── AMBIENT LAYER (ICONOS FLOTANTES DESTACADOS) ── */
+.ambient-layer { 
+  position: fixed; 
+  inset: 0; 
+  pointer-events: none; 
+  z-index: -1; /* Cambiado a -1 */
+  overflow: hidden; 
+}
+
+.ambient-icon {
+  position: absolute;
+  top: 0; /* Agrega esto para dar una posición base segura */
+  font-weight: bold;
+  opacity: 0.35;
+  filter: drop-shadow(0 0 8px var(--accent)) drop-shadow(0 0 20px var(--java));
+  color: #fff;
+  user-select: none;
+  animation: 
+    floatIcon var(--float-dur) linear var(--float-del) infinite, 
+    pulseGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes floatIcon {
+  0% { 
+    transform: translateY(110vh) rotate(0deg) scale(0.8); 
+    opacity: 0; 
+  }
+  10% { 
+    opacity: 0.4; 
+    /* Hemos quitado el transform de aquí */
+  }
+  90% { 
+    opacity: 0.4; 
+  }
+  100% { 
+    transform: translateY(-15vh) rotate(360deg) scale(1.5); 
+    opacity: 0; 
+  }
+}
+
+@keyframes pulseGlow {
+  0% { filter: drop-shadow(0 0 8px var(--accent)) drop-shadow(0 0 15px var(--java)); }
+  100% { filter: drop-shadow(0 0 15px var(--accent)) drop-shadow(0 0 35px var(--java)); }
+}
+
+/* ── GRID OVERLAY ANIMADO ── */
+.grid-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: linear-gradient(var(--border) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--border) 1.5px, transparent 1.5px);
+  background-size: 70px 70px;
+  opacity: 0.3;
+  animation: scrollGrid 20s linear infinite;
+}
+@keyframes scrollGrid {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(70px); }
+}
+
+/* ── SCREENS ── */
+.screen { display: none; position: relative; z-index: 1; min-height: 100vh; }
+.screen.active { display: block; animation: screenIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes screenIn { from { opacity: 0; transform: scale(0.95) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+#screenNick.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* ══════════════════════════════════
+   GLASSMORPHISM CARDS (COMÚN)
+══════════════════════════════════ */
+.nick-card, .world-card, .game-card, .modal-card, .pass-card {
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow), var(--glow);
+}
+
+/* ══════════════════════════════════
+   NICK SCREEN
+══════════════════════════════════ */
+#screenNick { min-height: 100vh; padding: 2rem; }
+.nick-card {
+  border-radius: 32px; padding: 3.5rem 3rem; max-width: 500px; width: 100%; text-align: center;
+  animation: scaleInBounce 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes scaleInBounce { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+
+.nick-logo { font-size: 5.5rem; margin-bottom: 1rem; filter: drop-shadow(0 10px 15px rgba(255, 152, 0, 0.5)); animation: floatLogo 3s ease-in-out infinite; }
+@keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+.nick-title { font-size: 2.8rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.03em; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
+.nick-title span { color: var(--java); text-shadow: 0 0 20px var(--java); }
+.nick-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 2.5rem; line-height: 1.6; }
+.nick-input {
+  width: 100%; background: rgba(0,0,0,0.4); border: 2px solid var(--border); border-radius: 16px;
+  padding: 1rem 1.5rem; font-family: var(--font-ui); font-size: 1.1rem; color: #fff; margin-bottom: 1rem;
+  outline: none; transition: all 0.3s ease; text-align: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+.nick-input:focus { border-color: var(--accent); box-shadow: 0 0 20px var(--accent), inset 0 0 15px var(--accent); transform: scale(1.02); }
+.nick-error { color: var(--accent4); font-size: 0.9rem; font-weight: bold; margin-bottom: 1rem; min-height: 1.2em; text-shadow: 0 0 10px var(--accent4); }
+.nick-chips { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1rem; justify-content: center; }
+.nick-chip {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 100px;
+  padding: 0.4rem 1.2rem; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: var(--trans);
+}
+.nick-chip:hover { border-color: var(--accent); color: var(--bg); background: var(--accent); box-shadow: 0 0 15px var(--accent); transform: translateY(-3px); }
+.nick-list-title { font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; margin-top: 2rem; }
+
+/* ══════════════════════════════════
+   HOME SCREEN
+══════════════════════════════════ */
+.home-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 3rem;
+  background: rgba(13, 22, 41, 0.4); border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+.brand { display: flex; align-items: center; gap: 0.8rem; transition: var(--trans); cursor: pointer; }
+.brand:hover { transform: scale(1.05); filter: drop-shadow(0 0 10px var(--java)); }
+.brand-icon { font-size: 2rem; }
+.brand-name { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.brand-name span { color: var(--java); }
+.header-controls { display: flex; gap: 0.8rem; align-items: center; }
+.ctrl-btn {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 12px;
+  width: 44px; height: 44px; font-size: 1.2rem; cursor: pointer; transition: var(--trans);
+  display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+}
+.ctrl-btn:hover { background: var(--accent); border-color: var(--accent); color: #000; transform: translateY(-4px) rotate(8deg); box-shadow: 0 8px 20px rgba(0,255,204,0.4); }
+.nick-display {
+  background: linear-gradient(45deg, var(--surface2), rgba(0,212,170,0.2)); border: 1px solid var(--accent);
+  border-radius: 100px; padding: 0.5rem 1.2rem; font-size: 0.9rem; font-weight: 800; color: var(--text);
+  box-shadow: 0 0 15px rgba(0,212,170,0.2); text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* HERO */
+.hero { text-align: center; padding: 5rem 2rem 3rem; position: relative; }
+.hero::after {
+  content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+  width: 80vw; height: 80vw; background: radial-gradient(circle, rgba(0, 255, 204, 0.15) 0%, transparent 60%);
+  pointer-events: none; z-index: -1;
+}
+.hero-badge {
+  display: inline-block; background: linear-gradient(135deg, rgba(0,255,204,0.2), rgba(0,180,216,0.2));
+  border: 1px solid var(--accent); border-radius: 100px; padding: 0.5rem 1.5rem; font-size: 0.8rem;
+  font-weight: 800; color: var(--text); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.8rem;
+  box-shadow: 0 0 20px rgba(0,255,204,0.3); animation: pulseBadge 2s infinite alternate;
+}
+@keyframes pulseBadge { from { box-shadow: 0 0 10px rgba(0,255,204,0.2); } to { box-shadow: 0 0 25px rgba(0,255,204,0.6); } }
+.hero-title { font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1rem; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.hero-title .java-color { color: var(--java); text-shadow: 0 0 30px rgba(255,152,0,0.5); }
+.hero-title .accent-color { color: var(--accent); text-shadow: 0 0 30px rgba(0,255,204,0.5); }
+.hero-sub { font-size: 1.3rem; font-weight: 600; color: var(--text); margin-bottom: 1.5rem; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+.hero-desc { max-width: 600px; margin: 0 auto 3rem; color: var(--text-muted); font-size: 1rem; line-height: 1.8; }
+.hero-stats {
+  display: inline-flex; align-items: center; justify-content: center; gap: 2.5rem; flex-wrap: wrap;
+  background: var(--surface); padding: 1.5rem 3rem; border-radius: 24px; border: 1px solid var(--border);
+  box-shadow: var(--shadow); backdrop-filter: blur(10px);
+}
+.stat { display: flex; flex-direction: column; align-items: center; transition: var(--trans); }
+.stat:hover { transform: scale(1.1); }
+.stat-n { font-size: 2.5rem; font-weight: 900; color: var(--accent); font-family: var(--font-mono); text-shadow: 0 0 15px var(--accent); }
+.stat-l { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.3rem; font-weight: bold; }
+.stat-sep { width: 2px; height: 50px; background: linear-gradient(to bottom, transparent, var(--accent), transparent); }
+
+/* WORLDS GRID */
+.section-header { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 1rem; display: flex; align-items: center; justify-content: center; }
+.section-header h2 { font-size: 1.8rem; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 0 15px var(--accent); }
+.worlds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 1rem 2rem 5rem; }
+
+.world-card {
+  border-radius: var(--radius); padding: 2.5rem 2rem; cursor: pointer; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+.world-card::before {
+  content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, var(--wc, var(--accent)) 0%, transparent 60%);
+  opacity: 0.15; transition: opacity 0.4s ease;
+}
+.world-card:hover {
+  transform: translateY(-12px) scale(1.03);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px var(--wc, var(--accent));
+  border-color: var(--wc, var(--accent));
+}
+.world-card:hover::before { opacity: 0.35; }
+.world-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 0%;
+  background: var(--wc, var(--accent)); transition: width 0.4s ease;
+}
+.world-card:hover::after { width: 100%; }
+
+.world-number { font-size: 0.8rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; background: rgba(0,0,0,0.3); padding: 0.3rem 0.8rem; border-radius: 8px; }
+.world-icon-wrap { font-size: 3.5rem; margin-bottom: 1rem; display: block; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); transition: var(--trans); }
+.world-card:hover .world-icon-wrap { transform: scale(1.2) rotate(5deg); }
+.world-name { font-size: 1.4rem; font-weight: 900; margin-bottom: 0.8rem; color: #fff; }
+.world-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem; flex-grow: 1; }
+.world-footer { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; width: 100%; }
+.badge {
+  display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+  border-radius: 100px; padding: 0.4rem 1rem; font-size: 0.8rem; font-weight: bold; color: #fff;
+}
+.badge.done { background: rgba(0, 212, 170, 0.2); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(0,255,204,0.3); }
+
+/* FOOTER */
+.home-footer { text-align: center; padding: 2rem; font-size: 0.85rem; font-weight: bold; color: var(--text-muted); border-top: 1px solid var(--border); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); }
+
+/* ══════════════════════════════════
+   LESSON SCREEN
+══════════════════════════════════ */
+.lesson-wrap { max-width: 900px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+.back-btn {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 0.6rem 1.5rem;
+  color: #fff; font-family: var(--font-ui); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: var(--trans);
+  margin-bottom: 2.5rem; display: inline-flex; align-items: center; gap: 0.5rem; backdrop-filter: blur(5px);
+}
+.back-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: translateX(-5px); box-shadow: 0 0 20px var(--accent); }
+.lesson-world-badge { font-size: 5rem; margin-bottom: 1rem; animation: bounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); display: block; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+.lesson-title { font-size: 2.5rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: -0.02em; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+.lesson-intro { color: var(--text-muted); line-height: 1.8; margin-bottom: 2.5rem; font-size: 1.1rem; }
+.key-card {
+  background: linear-gradient(135deg, rgba(255,152,0,0.15), rgba(255,152,0,0.05)); border: 2px solid var(--java);
+  border-radius: var(--radius); padding: 2rem; display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 3rem;
+  box-shadow: 0 10px 30px rgba(255,152,0,0.2); position: relative; overflow: hidden;
+}
+.key-card::before { content:''; position:absolute; top:0; left:-100%; width:50%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transform:skewX(-20deg); animation: shine 3s infinite; }
+@keyframes shine { 100% { left: 200%; } }
+.key-icon { font-size: 2.5rem; flex-shrink: 0; filter: drop-shadow(0 0 10px var(--java)); }
+.key-card p { font-size: 1.05rem; line-height: 1.7; font-weight: 600; color: #fff; }
+
+.concepts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
+.concept-chip {
+  background: rgba(0,0,0,0.4); border: 2px solid var(--border2); border-radius: 18px; padding: 1.5rem;
+  transition: var(--trans); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.concept-chip:hover { border-color: var(--accent); transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,255,204,0.2); background: var(--surface2); }
+.c-icon { font-size: 2.2rem; margin-bottom: 0.8rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+.c-name { font-size: 1rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+.c-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+/* CODE EXAMPLE */
+.code-example {
+  background: #0d1117; border: 2px solid #30363d; border-radius: 16px; padding: 1.5rem; margin-bottom: 2.5rem;
+  overflow-x: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.6); position: relative;
+}
+.code-example::after { content: 'JAVA'; position: absolute; top: 1rem; right: 1.5rem; font-weight: 900; color: #30363d; font-size: 2rem; pointer-events: none; }
+.code-example pre { font-family: var(--font-mono); font-size: 0.95rem; line-height: 1.8; color: #e6edf3; }
+.code-lang {
+  display: inline-block; background: var(--java); border-radius: 6px; padding: 0.2rem 0.8rem;
+  font-size: 0.75rem; font-weight: 900; color: #000; margin-bottom: 1rem; font-family: var(--font-mono); text-transform: uppercase;
+}
+
+/* ══════════════════════════════════
+   PRIMARY/SECONDARY BTNS (VIBRANTES)
+══════════════════════════════════ */
+.primary-btn {
+  display: block; width: 100%; position: relative; overflow: hidden;
+  background: linear-gradient(45deg, var(--accent), var(--accent2), var(--java)); background-size: 200% 200%;
+  color: #000; border: none; border-radius: 18px; padding: 1.2rem 2.5rem; font-size: 1.1rem; font-weight: 900;
+  font-family: var(--font-ui); cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 25px rgba(0, 212, 170, 0.5); letter-spacing: 1px; text-transform: uppercase;
+  animation: bgPan 4s infinite alternate;
+}
+@keyframes bgPan { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+.primary-btn::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%); opacity: 0; transition: opacity 0.3s; transform: scale(0.5); }
+.primary-btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 35px rgba(0, 212, 170, 0.7); }
+.primary-btn:hover::after { opacity: 1; transform: scale(1); }
+.primary-btn:active { transform: translateY(2px); }
+
+/* ══════════════════════════════════
+   GAME SCREEN
+══════════════════════════════════ */
+.game-topbar {
+  display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem;
+  background: rgba(13, 22, 41, 0.7); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;
+  backdrop-filter: blur(15px); box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+.game-meta { display: flex; flex-direction: column; align-items: center; }
+.meta-world { font-size: 0.75rem; font-weight: bold; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; }
+.meta-level { font-size: 1.1rem; font-weight: 900; color: #fff; }
+
+.game-progress-wrap { padding: 0.8rem 2rem; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
+.game-progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 6px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
+.game-progress-fill { height: 100%; background: linear-gradient(90deg, var(--java), var(--accent)); border-radius: 10px; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 0 10px var(--accent); }
+.timer-bar-wrap { height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.timer-bar-fill { height: 100%; background: var(--accent2); transition: width 1s linear; box-shadow: 0 0 8px var(--accent2); }
+.timer-bar-fill.urgent { background: var(--accent4); box-shadow: 0 0 15px var(--accent4); }
+
+.game-hud {
+  display: flex; align-items: center; justify-content: space-around; padding: 1rem 2rem;
+  background: linear-gradient(180deg, rgba(13,22,41,0.6), transparent); border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.hud-item { display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.4); padding: 0.5rem 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); }
+.hud-label { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 0.2rem; }
+.hud-val { font-size: 1.6rem; font-weight: 900; font-family: var(--font-mono); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+#scoreDisplay { color: var(--java); text-shadow: 0 0 15px var(--java); }
+.timer-val { color: var(--accent2); text-shadow: 0 0 15px var(--accent2); }
+.timer-val.urgent { color: var(--accent4); animation: pulseUrgent 0.5s ease infinite alternate; text-shadow: 0 0 20px var(--accent4); }
+@keyframes pulseUrgent { from { transform: scale(1); opacity: 1; } to { transform: scale(1.2); opacity: 0.7; color: #fff; } }
+.lives-icons { font-size: 1.4rem; display: flex; gap: 0.2rem; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
+
+.game-card {
+  max-width: 800px; margin: 2rem auto 4rem; padding: 2.5rem; border-radius: 28px;
+  animation: slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes slideInUp { from { transform: translateY(40px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+.mission-tag {
+  display: inline-block; background: rgba(255,152,0,0.15); border: 1px solid var(--java);
+  border-radius: 100px; padding: 0.4rem 1.2rem; font-size: 0.75rem; font-weight: 900; color: var(--java);
+  text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1.5rem; box-shadow: 0 0 15px rgba(255,152,0,0.3);
+}
+.game-question { font-size: 1.35rem; font-weight: 800; line-height: 1.6; margin-bottom: 1.2rem; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+.game-fragment {
+  background: #0d1117; border: 1px solid #30363d; border-left: 4px solid var(--java);
+  border-radius: 12px; padding: 1.2rem 1.5rem; font-size: 0.95rem; color: #e6edf3;
+  line-height: 1.7; margin-bottom: 1.5rem; font-family: var(--font-mono); white-space: pre-wrap; overflow-x: auto;
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
+}
+.game-hint {
+  display: flex; align-items: center; gap: 0.8rem; background: rgba(0, 255, 204, 0.1);
+  border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 12px; padding: 0.8rem 1.2rem;
+  font-size: 0.9rem; font-weight: bold; color: var(--accent); margin-bottom: 2rem; box-shadow: 0 0 15px rgba(0,255,204,0.1);
+}
+
+/* MC OPTIONS */
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media(max-width:600px){ .options-grid { grid-template-columns: 1fr; } }
+.option-btn {
+  background: rgba(0,0,0,0.4); border: 2px solid var(--border); border-radius: 16px;
+  padding: 1rem 1.2rem; text-align: left; font-family: var(--font-ui); font-size: 0.95rem; font-weight: 600;
+  color: #fff; cursor: pointer; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex; align-items: center; gap: 1rem; line-height: 1.5; backdrop-filter: blur(5px);
+}
+.option-btn:hover:not(:disabled) {
+  border-color: var(--accent); background: rgba(0, 255, 204, 0.15); transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0,255,204,0.2);
+}
+.option-btn .opt-letter {
+  flex-shrink: 0; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border: 2px solid var(--border);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+  font-weight: 900; font-family: var(--font-mono); color: var(--accent); transition: var(--trans);
+}
+.option-btn:hover:not(:disabled) .opt-letter { background: var(--accent); color: #000; border-color: var(--accent); }
+.option-btn.correct { border-color: var(--accent); background: rgba(0,212,170,0.2); box-shadow: 0 0 30px rgba(0,212,170,0.4); animation: correctPulse 1s; }
+.option-btn.wrong { border-color: var(--accent4); background: rgba(255,51,102,0.2); box-shadow: 0 0 30px rgba(255,51,102,0.4); animation: shake 0.4s; }
+.option-btn.correct .opt-letter { background: var(--accent); color: #000; }
+.option-btn.wrong .opt-letter { background: var(--accent4); color: #fff; border-color: var(--accent4); }
+.option-btn:disabled { cursor: not-allowed; opacity: 0.8; }
+
+@keyframes correctPulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+/* ── MATCH ── */
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+@media(max-width:600px){ .match-grid { grid-template-columns: 1fr; } }
+.match-col { display: flex; flex-direction: column; gap: 0.8rem; }
+.match-item {
+  background: rgba(0,0,0,0.5); border: 2px solid var(--border); border-radius: 14px;
+  padding: 1rem 1.2rem; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: var(--trans); user-select: none;
+}
+.match-item.selected { border-color: var(--accent2); background: rgba(0,191,255,0.2); box-shadow: 0 0 20px rgba(0,191,255,0.4); transform: scale(1.03); }
+.match-item.matched { border-color: var(--accent); background: rgba(0,255,204,0.15); color: var(--accent); cursor: default; opacity: 0.7; }
+.match-item.wrong-match { animation: shake 0.4s; border-color: var(--accent4); background: rgba(255,51,102,0.3); }
+.match-label { font-size: 0.8rem; font-weight: 900; color: var(--java); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.5rem; text-align: center; }
+.match-hint-line { font-size: 0.9rem; font-weight: bold; color: var(--accent2); text-align: center; margin-top: 1rem; }
+
+/* ── DRAG DROP ── */
+.drag-area {
+  display: flex; flex-wrap: wrap; gap: 0.8rem; min-height: 80px; background: rgba(0,0,0,0.3);
+  border: 2px dashed var(--border); border-radius: 16px; padding: 1rem; margin-bottom: 1rem; transition: var(--trans);
+}
+.drag-area.drag-over { border-color: var(--java); background: rgba(255,152,0,0.1); transform: scale(1.02); }
+.drag-item {
+  background: var(--surface2); border: 2px solid var(--accent2); border-radius: 12px;
+  padding: 0.6rem 1.2rem; font-size: 0.9rem; font-weight: bold; cursor: grab; user-select: none; transition: var(--trans);
+  font-family: var(--font-mono); box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.drag-item:active { cursor: grabbing; transform: scale(0.9); opacity: 0.8; }
+.drag-item.placed { border-color: var(--accent); background: rgba(0,255,204,0.15); }
+.drag-item.wrong-placed { border-color: var(--accent4); background: rgba(255,51,102,0.2); animation: shake 0.4s; }
+.drag-category { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 1.5rem; margin-bottom: 1rem; }
+.drag-cat-name { font-size: 0.9rem; font-weight: 900; color: var(--java); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(255,152,0,0.3); }
+.drag-source { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2rem; padding: 1.5rem; background: rgba(0,191,255,0.1); border-radius: 16px; border: 1px dashed var(--accent2); }
+
+/* ── FILL BLANK ── */
+.fill-blank-wrap { margin-bottom: 2rem; background: #0d1117; padding: 1.5rem; border-radius: 16px; border: 1px solid #30363d; box-shadow: inset 0 5px 15px rgba(0,0,0,0.5); }
+.fill-text { font-size: 1.1rem; line-height: 2.5; font-family: var(--font-mono); white-space: pre-wrap; color: #e6edf3; }
+.fill-input {
+  background: rgba(0,0,0,0.8); border: 2px solid var(--java); border-radius: 10px;
+  padding: 0.4rem 1rem; font-family: var(--font-mono); font-size: 1.1rem; font-weight: bold; color: var(--java);
+  width: 220px; outline: none; text-align: center; transition: all 0.3s ease; margin: 0 0.5rem; box-shadow: 0 0 10px rgba(255,152,0,0.2);
+}
+.fill-input:focus { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px rgba(0,255,204,0.4); transform: translateY(-2px); }
+.fill-input.correct { border-color: var(--accent); background: rgba(0,255,204,0.1); color: var(--accent); box-shadow: 0 0 20px rgba(0,255,204,0.5); }
+.fill-input.wrong { border-color: var(--accent4); background: rgba(255,51,102,0.1); color: var(--accent4); animation: shake 0.4s; }
+.check-btn { width: auto; margin-top: 1rem; padding: 1rem 3rem; display: inline-block; }
+
+/* ── TF (TRUE/FALSE) ── */
+.tf-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; }
+.tf-btn {
+  background: rgba(0,0,0,0.4); border: 3px solid var(--border); border-radius: 20px;
+  padding: 2rem 1rem; font-size: 1.3rem; font-weight: 900; font-family: var(--font-ui);
+  cursor: pointer; transition: var(--trans); text-align: center; color: #fff; backdrop-filter: blur(5px);
+}
+.tf-btn:hover:not(:disabled) { transform: translateY(-8px) scale(1.02); border-color: var(--accent); box-shadow: 0 15px 30px rgba(0,255,204,0.3); }
+.tf-btn.correct { border-color: var(--accent); background: rgba(0,255,204,0.2); box-shadow: 0 0 40px rgba(0,255,204,0.5); }
+.tf-btn.wrong { border-color: var(--accent4); background: rgba(255,51,102,0.2); box-shadow: 0 0 40px rgba(255,51,102,0.5); animation: shake 0.4s; }
+
+/* ══════════════════════════════════
+   MODALS
+══════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,10,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1.5rem; animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-overlay.hidden { display: none; }
+.modal-card { max-width: 550px; text-align: center; border-width: 3px; }
+.modal-card.correct-modal { border-color: var(--accent); box-shadow: 0 20px 60px rgba(0,255,204,0.3), inset 0 0 30px rgba(0,255,204,0.1); }
+.modal-card.wrong-modal { border-color: var(--accent4); box-shadow: 0 20px 60px rgba(255,51,102,0.3), inset 0 0 30px rgba(255,51,102,0.1); }
+
+.modal-emoji { font-size: 4.5rem; margin-bottom: 1rem; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); animation: bounceModal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes bounceModal { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+
+.modal-title { font-size: 2rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: -0.02em; }
+.modal-card.correct-modal .modal-title { color: var(--accent); text-shadow: 0 0 15px rgba(0,255,204,0.5); }
+.modal-card.wrong-modal .modal-title { color: var(--accent4); text-shadow: 0 0 15px rgba(255,51,102,0.5); }
+.modal-body { font-size: 1.05rem; color: #fff; line-height: 1.7; margin-bottom: 1.5rem; font-weight: 500; }
+.modal-remember {
+  background: rgba(255,152,0,0.15); border-radius: 16px; padding: 1.2rem; font-size: 0.95rem; font-weight: bold;
+  color: #fff; margin-bottom: 2rem; border-left: 4px solid var(--java); text-align: left; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* WORLD DONE */
+.world-done-stars { font-size: 3rem; margin: 1rem 0; letter-spacing: 10px; filter: drop-shadow(0 0 20px rgba(255,215,0,0.6)); animation: pulseGlow 2s infinite alternate; }
+.world-done-score { font-size: 3.5rem; font-weight: 900; font-family: var(--font-mono); color: var(--java); margin-bottom: 0.5rem; text-shadow: 0 0 20px rgba(255,152,0,0.5); }
+
+/* ══════════════════════════════════
+   RANKING SCREEN & ADMIN
+══════════════════════════════════ */
+.rank-wrap, .admin-wrap { max-width: 900px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+.rank-title { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+.rank-sub { color: var(--accent); font-size: 1rem; font-weight: bold; margin-bottom: 2.5rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.tab-bar { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.tab-btn {
+  background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1.5rem;
+  font-size: 0.95rem; font-weight: bold; font-family: var(--font-ui); color: var(--text-muted);
+  cursor: pointer; transition: var(--trans); backdrop-filter: blur(5px);
+}
+.tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 20px rgba(0,255,204,0.4); transform: translateY(-2px); }
+.tab-btn:hover:not(.active) { border-color: var(--accent); color: #fff; }
+
+.rank-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+.rank-table th { background: transparent; padding: 0.5rem 1.2rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); }
+.rank-table td { background: rgba(0,0,0,0.4); padding: 1.2rem; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 1rem; font-weight: bold; backdrop-filter: blur(5px); transition: var(--trans); }
+.rank-table tr td:first-child { border-left: 1px solid rgba(255,255,255,0.05); border-radius: 16px 0 0 16px; }
+.rank-table tr td:last-child { border-right: 1px solid rgba(255,255,255,0.05); border-radius: 0 16px 16px 0; }
+.rank-table tr:hover td { background: rgba(0,255,204,0.1); transform: scale(1.01); }
+.rank-pos { font-size: 1.2rem; color: var(--java); text-shadow: 0 0 10px rgba(255,152,0,0.4); }
+.rank-score { font-family: var(--font-mono); color: var(--accent); font-size: 1.1rem; }
+.rank-you td { background: rgba(0,255,204,0.15); border-color: var(--accent); box-shadow: 0 0 15px rgba(0,255,204,0.1); }
+
+/* ADMIN */
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+.stat-card {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 20px; padding: 2rem;
+  text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+  transition: transform 0.3s;
+}
+.stat-card:hover { transform: translateY(-5px); border-color: var(--java); box-shadow: 0 15px 40px rgba(255,152,0,0.2); }
+.sc-num { font-size: 3rem; font-weight: 900; font-family: var(--font-mono); color: var(--java); text-shadow: 0 0 20px rgba(255,152,0,0.5); }
+.sc-label { font-size: 0.85rem; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.5rem; }
+
+.user-row {
+  display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 1.2rem 1.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; backdrop-filter: blur(5px);
+}
+.danger-btn, .warn-btn {
+  border-radius: 10px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: bold; font-family: var(--font-ui);
+  cursor: pointer; transition: var(--trans); border: 1px solid;
+}
+.danger-btn { background: rgba(255,51,102,0.1); color: var(--accent4); border-color: var(--accent4); }
+.danger-btn:hover { background: var(--accent4); color: #fff; box-shadow: 0 0 15px var(--accent4); }
+.warn-btn { background: rgba(255,152,0,0.1); color: var(--java); border-color: var(--java); }
+.warn-btn:hover { background: var(--java); color: #000; box-shadow: 0 0 15px var(--java); }
+
+/* ══════════════════════════════════
+   CREDITS SCREEN
+══════════════════════════════════ */
+.credits-wrap { max-width: 750px; margin: 0 auto; padding: 5rem 2rem; text-align: center; }
+.credits-logo { font-size: 6rem; margin-bottom: 1rem; filter: drop-shadow(0 10px 20px rgba(255,152,0,0.5)); animation: floatLogo 4s ease-in-out infinite; }
+.credits-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.03em; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+.credits-title span { color: var(--java); text-shadow: 0 0 20px rgba(255,152,0,0.5); }
+.credits-subtitle { color: var(--accent); font-weight: bold; margin-bottom: 4rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; }
+.credits-section {
+  background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+  padding: 2rem; margin-bottom: 1.5rem; text-align: left; backdrop-filter: blur(10px);
+  transition: transform 0.3s;
+}
+.credits-section:hover { transform: scale(1.02); border-color: var(--border); box-shadow: 0 0 20px rgba(0,255,204,0.15); }
+.credits-label { font-size: 0.8rem; font-weight: 900; color: var(--java); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; }
+.credits-value { font-size: 1.1rem; font-weight: bold; line-height: 1.6; color: #fff; }
+.credits-year { font-size: 4rem; font-weight: 900; color: transparent; -webkit-text-stroke: 2px var(--accent); margin-top: 3rem; text-shadow: 0 0 30px rgba(0,255,204,0.3); }
+
+/* ══════════════════════════════════
+   CONFETTI
+══════════════════════════════════ */
+.confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media(max-width:768px){
+  .home-header { padding: 1rem 1.5rem; }
+  .hero { padding: 3.5rem 1.2rem 2rem; }
+  .hero-title { font-size: 3rem; }
+  .worlds-grid { padding: 1rem 1.2rem 4rem; grid-template-columns: 1fr; }
+  .lesson-wrap, .rank-wrap, .admin-wrap, .credits-wrap { padding: 2rem 1.2rem 4rem; }
+  .game-card { margin: 1rem 0.5rem; padding: 1.5rem; border-radius: 20px; }
+  .hero-stats { gap: 1.5rem; padding: 1.5rem; flex-direction: column; }
+  .stat-sep { width: 80%; height: 2px; background: linear-gradient(to right, transparent, var(--accent), transparent); }
+}
+</style>
+</head>
+<body>
+
+<div class="ambient-layer" id="ambientLayer"></div>
+<div class="grid-overlay"></div>
+<canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+<!-- ══════════════════════════════════
+     SCREEN 0: NICK
+══════════════════════════════════ -->
+<div id="screenNick" class="screen active">
+  <div class="nick-card">
+    <div class="nick-logo">☕</div>
+    <h1 class="nick-title">Java<span>Quest</span></h1>
+    <p class="nick-sub">Aprende programación en Java de forma interactiva y gamificada. Ingresa tu nombre para comenzar.</p>
+    <input class="nick-input" id="nickInput" type="text" maxlength="20" placeholder="Tu nombre de usuario..." autocomplete="off"/>
+    <div class="nick-error" id="nickError"></div>
+    <button class="primary-btn" id="btnNickEnter">¡Comenzar a aprender! 🚀</button>
+    <div id="nickList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 1: HOME
+══════════════════════════════════ -->
+<div id="screenHome" class="screen">
+  <header class="home-header">
+    <div class="brand">
+      <span class="brand-icon">☕</span>
+      <span class="brand-name">Java<span>Quest</span></span>
+    </div>
+    <div class="header-controls">
+      <span class="nick-display" id="headerNickDisplay"></span>
+      <button class="ctrl-btn" id="btnTheme" title="Tema">🌙</button>
+      <button class="ctrl-btn" id="btnSound" title="Sonido">🔊</button>
+      <button class="ctrl-btn" id="btnRanking" title="Ranking">🏆</button>
+      <button class="ctrl-btn" id="btnAdmin" title="Admin">⚙️</button>
+      <button class="ctrl-btn" id="btnCredits" title="Créditos">ℹ️</button>
+      <button class="ctrl-btn" id="btnLogout" title="Cambiar usuario">🚪</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-badge">🎓 Plataforma Educativa · Java · 2026</div>
+    <h1 class="hero-title"><span class="java-color">Java</span><span class="accent-color">Quest</span></h1>
+    <p class="hero-sub">Aprende Java desde cero con retos interactivos</p>
+    <p class="hero-desc">Una plataforma gamificada para estudiantes que quieren aprender los fundamentos de programación en Java. Avanza por mundos, supera retos y conviértete en programador.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-n">8</span><span class="stat-l">Mundos</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat"><span class="stat-n" id="statLevels">0</span><span class="stat-l">Retos</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat"><span class="stat-n" id="statDone">0</span><span class="stat-l">Completados</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat"><span class="stat-n" id="statScore">0</span><span class="stat-l">Mis Puntos</span></div>
+    </div>
+  </section>
+
+  <div class="section-header"><h2>🌎 Mundos de aprendizaje</h2></div>
+  <section class="worlds-grid" id="worldsGrid"></section>
+  <footer class="home-footer">
+    JavaQuest · Creado por Jonathan Meza &amp; Juan Yacomelo · Licenciatura en Tecnología · 2026
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 2: LESSON
+══════════════════════════════════ -->
+<div id="screenLesson" class="screen">
+  <div class="lesson-wrap">
+    <button class="back-btn" id="btnLessonBack">← Inicio</button>
+    <span class="lesson-world-badge" id="lessonBadge"></span>
+    <h2 class="lesson-title" id="lessonTitle"></h2>
+    <p class="lesson-intro" id="lessonIntro"></p>
+    <div class="key-card">
+      <span class="key-icon">🔑</span>
+      <p id="lessonKeyText"></p>
+    </div>
+    <div id="lessonCodeExample"></div>
+    <div class="concepts-grid" id="conceptsGrid"></div>
+    <button class="primary-btn" id="btnStartWorld">¡Comenzar los retos! 🚀</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 3: GAME
+══════════════════════════════════ -->
+<div id="screenGame" class="screen">
+  <div class="game-topbar">
+    <button class="ctrl-btn" id="btnGameHome" title="Inicio">🏠</button>
+    <div class="game-meta">
+      <span class="meta-world" id="gameWorldLabel"></span>
+      <span class="meta-level" id="gameLevelLabel"></span>
+    </div>
+    <button class="ctrl-btn" id="btnGameSound" title="Sonido">🔊</button>
+  </div>
+  <div class="game-progress-wrap">
+    <div class="game-progress-bar"><div class="game-progress-fill" id="progressFill"></div></div>
+    <div class="timer-bar-wrap"><div class="timer-bar-fill" id="timerFill"></div></div>
+  </div>
+  <div class="game-hud">
+    <div class="hud-item"><span class="hud-label">Puntos</span><span class="hud-val" id="scoreDisplay">0</span></div>
+    <div class="hud-item"><span class="hud-label">Vidas</span><div class="lives-icons" id="livesDisplay"></div></div>
+    <div class="hud-item"><span class="hud-label">Tiempo</span><span class="hud-val timer-val" id="timerDisplay">60</span></div>
+  </div>
+  <div class="game-card" id="gameCard">
+    <div class="mission-tag" id="missionTag"></div>
+    <h3 class="game-question" id="gameQuestion"></h3>
+    <div class="game-fragment" id="gameFragment"></div>
+    <div class="game-hint" id="gameHint"><span>💡</span> <span id="hintText"></span></div>
+    <div id="optionsContainer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 4: RANKING
+══════════════════════════════════ -->
+<div id="screenRanking" class="screen">
+  <header class="home-header">
+    <div class="brand"><span class="brand-icon">🏆</span><span class="brand-name">Rank<span>ing</span></span></div>
+    <button class="back-btn" id="btnRankingBack" style="margin:0">← Inicio</button>
+  </header>
+  <div class="rank-wrap">
+    <h2 class="rank-title">Tabla de Clasificación</h2>
+    <p class="rank-sub">Los mejores estudiantes de JavaQuest</p>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabScore" onclick="showRankTab('score')">🏆 Por Puntos</button>
+      <button class="tab-btn" id="tabWorlds" onclick="showRankTab('worlds')">🌍 Por Mundos</button>
+      <button class="tab-btn" id="tabAttempts" onclick="showRankTab('attempts')">🎯 Por Intentos</button>
+    </div>
+    <div id="rankingContent"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 5: ADMIN PANEL
+══════════════════════════════════ -->
+<div id="screenAdmin" class="screen">
+  <header class="home-header">
+    <div class="brand"><span class="brand-icon">⚙️</span><span class="brand-name">Panel <span>Admin</span></span></div>
+    <button class="back-btn" id="btnAdminBack" style="margin:0">← Inicio</button>
+  </header>
+  <div id="adminContent">
+    <div class="pass-screen">
+      <div class="pass-card">
+        <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
+        <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:.5rem">Acceso Administrador</h3>
+        <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:1.5rem">Ingresa la contraseña para acceder al panel de control.</p>
+        <input class="nick-input" id="adminPassInput" type="password" placeholder="Contraseña..."/>
+        <div class="nick-error" id="adminPassError"></div>
+        <button class="primary-btn" id="btnAdminPass">Acceder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCREEN 6: CREDITS
+══════════════════════════════════ -->
+<div id="screenCredits" class="screen">
+  <header class="home-header">
+    <div class="brand"><span class="brand-icon">ℹ️</span><span class="brand-name">Créd<span>itos</span></span></div>
+    <button class="back-btn" id="btnCreditsBack" style="margin:0">← Inicio</button>
+  </header>
+  <div class="credits-wrap">
+    <div class="credits-logo">☕</div>
+    <h1 class="credits-title">Java<span>Quest</span></h1>
+    <p class="credits-subtitle">Plataforma educativa interactiva para aprender Java</p>
+    <div class="credits-section">
+      <div class="credits-label">👨‍💻 Creadores</div>
+      <div class="credits-value">Jonathan Meza<br>Juan Yacomelo</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-label">📚 Asignatura</div>
+      <div class="credits-value">Hardware y Redes</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-label">🎓 Programa Académico</div>
+      <div class="credits-value">Licenciatura en Tecnología</div>
+    </div>
+    <div class="credits-section">
+      <div class="credits-label">🌐 Tecnologías Usadas</div>
+      <div class="credits-value">HTML5 · CSS3 · JavaScript Vanilla<br>localStorage · Web Audio API</div>
+    </div>
+    <div class="credits-year">2026</div>
+    <p style="color:var(--text-muted);margin-top:.5rem;font-size:.82rem">Todos los ejemplos de código usan sintaxis real de Java.</p>
+  </div>
+</div>
+
+<!-- MODAL: FEEDBACK -->
+<div id="feedbackModal" class="modal-overlay hidden">
+  <div class="modal-card" id="modalCard">
+    <div class="modal-emoji" id="modalEmoji"></div>
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <p class="modal-body" id="modalBody"></p>
+    <div class="modal-remember" id="modalRemember"></div>
+    <button class="primary-btn" id="btnModalNext"></button>
+  </div>
+</div>
+
+<!-- MODAL: WORLD DONE -->
+<div id="worldDoneModal" class="modal-overlay hidden">
+  <div class="modal-card modal-done">
+    <div class="modal-emoji">🏆</div>
+    <h3 class="modal-title" style="color:var(--java)">¡Mundo Completado!</h3>
+    <div class="world-done-stars" id="worldDoneStars"></div>
+    <div class="world-done-score" id="worldDoneScore"></div>
+    <p class="modal-body" id="worldDoneMsg"></p>
+    <button class="primary-btn" id="btnWorldDone">Volver al inicio 🏠</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════
+   AMBIENT ICONS
+═══════════════════════════════════════ */
+const AMBIENT_ICONS = ['☕','{}','</>','//','int','void','for','if','[];','🔢','🖥️','⚙️','class','null','true','[]','new','🧩'];
+
+/* ═══════════════════════════════════════
+   WORLDS DATA
+═══════════════════════════════════════ */
+const WORLDS = [
+  {
+    id:1, icon:'🤔', name:'¿Qué es Programar?', color:'#00d4aa',
+    desc:'Descubre qué es la programación, para qué sirve Java y da tus primeros pasos en el mundo del código.',
+    intro:'Antes de escribir código, necesitas entender qué es programar. Un programa es un conjunto de instrucciones que le dices a la computadora para que realice una tarea. Java es uno de los lenguajes más usados en el mundo: apps de Android, sistemas bancarios y mucho más.',
+    key:'Java es un lenguaje de programación orientado a objetos, multiplataforma y muy utilizado. El principio "Write Once, Run Anywhere" (escribe una vez, ejecuta en cualquier lugar) lo hace especial.',
+    codeExample:`// Mi primer programa en Java
+public class HolaMundo {
+    public static void main(String[] args) {
+        System.out.println("¡Hola, Mundo!");
+    }
+}`,
+    concepts:[
+      {icon:'💻',name:'Programa',desc:'Secuencia de instrucciones que ejecuta una computadora.'},
+      {icon:'☕',name:'Java',desc:'Lenguaje de programación orientado a objetos y multiplataforma.'},
+      {icon:'📦',name:'JVM',desc:'Java Virtual Machine: ejecuta el bytecode de Java en cualquier sistema.'},
+      {icon:'⚙️',name:'Compilar',desc:'Transformar código fuente (texto) en código que entiende la computadora.'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto 1 · Conceptos Base',question:'¿Qué es un programa de computadora?',fragment:'// Ejemplo: instrucciones para hacer café\n// 1. Llenar la cafetera con agua\n// 2. Agregar café molido\n// 3. Encender la cafetera\n// 4. Servir el café',hint:'Piensa en una receta de cocina para la computadora.',options:['Un archivo de video almacenado en disco','Una secuencia de instrucciones que la computadora ejecuta para resolver un problema','El hardware físico del equipo','Un tipo especial de virus informático'],correct:1,explanation:'Un programa es una secuencia ordenada de instrucciones escritas en un lenguaje de programación para que la computadora realice una tarea específica.',remember:'📌 Igual que una receta de cocina: pasos ordenados que llevan a un resultado.',time:60},
+      {type:'mc',mission:'Reto 2 · ¿Qué es Java?',question:'¿Cuál es el principio más famoso de Java que lo diferencia de otros lenguajes?',fragment:`// Código Java compilado una vez...
+// Se ejecuta en Windows, Linux, Mac, Android...
+// ¡Sin recompilar!`,hint:'La frase está en inglés y habla de "escribir" y "ejecutar".',options:['Debug Once, Fix Everywhere','Write Once, Run Anywhere','Code Fast, Ship Faster','One Language to Rule Them All'],correct:1,explanation:'"Write Once, Run Anywhere": el código Java se compila a bytecode y ese bytecode corre en cualquier sistema que tenga la JVM instalada.',remember:'📌 La JVM (Java Virtual Machine) es el intérprete que convierte bytecode a instrucciones del sistema.',time:60},
+      {type:'mc',mission:'Reto 3 · Primer Programa',question:'¿Cuál es la primera línea que imprime algo en pantalla en un programa Java?',fragment:`public class HolaMundo {
+    public static void main(String[] args) {
+        System.out.println("¡Hola, Mundo!");
+    }
+}`,hint:'Busca el método que imprime texto.',options:['public class HolaMundo {','public static void main(String[] args) {','System.out.println("¡Hola, Mundo!");','// Este es un comentario'],correct:2,explanation:'System.out.println() es el método para imprimir texto en la consola. "System" es la clase, "out" el flujo de salida y "println" imprime con salto de línea.',remember:'📌 System.out.print() no hace salto de línea. System.out.println() sí lo hace.',time:60},
+      {type:'tf',mission:'Reto 4 · Verdadero o Falso',question:'¿Es verdadero o falso?\n"Java necesita ser recompilado para cada sistema operativo diferente."',hint:'Recuerda el principio "Write Once, Run Anywhere".',correct:false,explanation:'FALSO. Java se compila una sola vez a bytecode y la JVM lo ejecuta en cualquier sistema operativo sin recompilar.',remember:'📌 Esto es precisamente lo que hace Java tan popular en entornos empresariales y móviles.',time:45},
+      {type:'fill',mission:'Reto 5 · Completa el Código',question:'Completa la instrucción para imprimir "Bienvenido a Java" en pantalla.',fragment:`public class Bienvenida {
+    public static void main(String[] args) {
+        [BLANK]("Bienvenido a Java");
+    }
+}`,hint:'El método de impresión que añade salto de línea.',blanks:[{placeholder:'método...',answer:'System.out.println'}],explanation:'System.out.println() es el método estándar para mostrar texto en consola en Java.',remember:'📌 No olvides las comillas para el texto String y el punto y coma al final.',time:60},
+      {type:'mc',mission:'Reto 6 · Comentarios',question:'¿Cuál es la forma correcta de escribir un comentario de una línea en Java?',fragment:`// Esto es un comentario
+/* Esto también es un comentario
+   pero de múltiples líneas */
+System.out.println("Esto NO es un comentario");`,hint:'Los comentarios son ignorados por el compilador.',options:['# Este es un comentario','-- Este es un comentario','// Este es un comentario','** Este es un comentario'],correct:2,explanation:'En Java, los comentarios de una línea usan // y los de múltiples líneas usan /* ... */. Los comentarios son ignorados por el compilador.',remember:'📌 Los comentarios son esenciales: documentan el código para ti y para otros programadores.',time:60},
+      {type:'match',mission:'Reto 7 · Empareja Conceptos',question:'Empareja cada término Java con su definición correcta.',hint:'Clic en el término, luego en su definición.',pairs:[{term:'JVM',def:'Ejecuta bytecode en cualquier SO'},{term:'javac',def:'Compilador de Java'},{term:'bytecode',def:'Código intermedio compilado'},{term:'.java',def:'Extensión del código fuente'}],explanation:'Cada componente del ecosistema Java tiene un rol específico en el proceso de compilación y ejecución.',remember:'📌 Flujo: código .java → javac lo compila → genera .class (bytecode) → JVM lo ejecuta.',time:90},
+      {type:'mc',mission:'Reto 8 · Aplicaciones',question:'¿Cuál de estas NO es una aplicación típica del lenguaje Java?',fragment:`// Java se usa en:
+// - Apps Android (90% del mercado móvil)
+// - Sistemas bancarios y financieros
+// - Servidores web empresariales (Spring)
+// - Big Data (Hadoop, Spark)`,hint:'Piensa en qué plataformas NO suelen usar Java.',options:['Aplicaciones de Android','Sistemas bancarios empresariales','Diseño de páginas web con CSS','Procesamiento de Big Data con Hadoop'],correct:2,explanation:'CSS (Cascading Style Sheets) es un lenguaje de estilos para páginas web, no tiene relación con Java. CSS no es un lenguaje de programación.',remember:'📌 CSS, HTML y JavaScript son las tecnologías web. Java es para apps de escritorio, móvil y servidores.',time:60},
+    ]
+  },
+  {
+    id:2, icon:'📦', name:'Variables y Tipos de Datos', color:'#00b4d8',
+    desc:'Aprende a almacenar información con variables y conoce los tipos de datos fundamentales de Java.',
+    intro:'Las variables son como cajas etiquetadas donde guardas información. En Java, cada variable tiene un tipo específico que dice qué clase de dato puede almacenar. Esto se llama "tipado estático".',
+    key:'En Java debes declarar el tipo de una variable antes de usarla: int edad = 20; El tipo garantiza que no mezcles peras con manzanas en tu código.',
+    codeExample:`// Variables en Java
+int edad = 20;           // Número entero
+double precio = 9.99;    // Número decimal
+boolean activo = true;   // Verdadero o falso
+char inicial = 'J';      // Un carácter
+String nombre = "Ana";   // Texto (cadena)
+
+System.out.println("Hola, " + nombre);
+System.out.println("Edad: " + edad);`,
+    concepts:[
+      {icon:'🔢',name:'int',desc:'Números enteros: -2147483648 a 2147483647.'},
+      {icon:'🔣',name:'double',desc:'Números decimales de doble precisión.'},
+      {icon:'✅',name:'boolean',desc:'Solo puede ser true o false.'},
+      {icon:'🔤',name:'String',desc:'Cadena de texto (varios caracteres).'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto 1 · Declarar Variables',question:'¿Cuál es la sintaxis correcta para declarar una variable entera llamada "edad" con valor 25 en Java?',fragment:`// Sintaxis general:
+// tipo nombreVariable = valor;`,hint:'Primero va el tipo, luego el nombre, luego el valor.',options:['edad = 25;','var edad = 25;','int edad = 25;','integer edad = 25;'],correct:2,explanation:'En Java: tipo nombreVariable = valor; → int edad = 25; El tipo "int" almacena enteros, el nombre "edad" identifica la variable, y 25 es el valor inicial.',remember:'📌 Java es "fuertemente tipado": debes declarar el tipo explícitamente. No existe "var" en versiones antiguas de Java.',time:60},
+      {type:'mc',mission:'Reto 2 · Tipos Primitivos',question:'¿Qué tipo de dato debes usar para guardar el precio de un producto (ej: 19.99) en Java?',fragment:`int precio = 19.99;  // ¿Funciona esto?
+// Necesita almacenar decimales...`,hint:'Necesitas un tipo que soporte decimales.',options:['int','String','double','boolean'],correct:2,explanation:'"double" almacena números decimales de doble precisión. "int" solo almacena enteros, por lo que 19.99 perdería los decimales (error de compilación).',remember:'📌 Para precios usa double o float. float tiene menos precisión pero ocupa menos memoria.',time:60},
+      {type:'fill',mission:'Reto 3 · Completar Código',question:'Completa la declaración de una variable de texto (String) con el nombre "ciudad".',fragment:`public class Main {
+    public static void main(String[] args) {
+        [BLANK] ciudad = "Bogotá";
+        System.out.println(ciudad);
+    }
+}`,hint:'El tipo de datos para texto en Java.',blanks:[{placeholder:'tipo...',answer:'String'}],explanation:'"String" es el tipo para cadenas de texto en Java. Nota que empieza con mayúscula, a diferencia de int, double, etc.',remember:'📌 String es una clase (con mayúscula), no un tipo primitivo. Por eso tiene métodos como .length(), .toUpperCase(), etc.',time:60},
+      {type:'mc',mission:'Reto 4 · boolean',question:'¿Cuál es el único valor posible que NO puede tener una variable boolean en Java?',fragment:`boolean esMayor = true;
+boolean estaActivo = false;
+boolean resultado = ???;`,hint:'El tipo boolean es binario: solo admite dos valores.',options:['true','false','1 (el número uno)','Ninguno: true y false son los únicos'],correct:2,explanation:'En Java, boolean solo acepta true o false. A diferencia de C o JavaScript, no puedes asignar 1 o 0 a un boolean; causaría error de compilación.',remember:'📌 boolean esMayorDeEdad = (edad >= 18); → La condición evalúa a true o false automáticamente.',time:60},
+      {type:'drag',mission:'Reto 5 · Clasifica los Tipos',question:'Arrastra cada variable a su tipo correcto: primitivo o de referencia.',hint:'Los tipos primitivos son 8 y van en minúscula. String es una clase.',categories:['🔵 Tipo Primitivo','🟠 Tipo de Referencia (Clase)'],items:[{text:'int edad = 5;',correct:0},{text:'String nombre = "Ana";',correct:1},{text:'boolean activo = true;',correct:0},{text:'double precio = 9.99;',correct:0},{text:'String[] lista = {};',correct:1}],explanation:'Java tiene 8 tipos primitivos (int, double, boolean, char, byte, short, long, float) y los demás son clases (String, arrays, objetos).',remember:'📌 Los primitivos se guardan en la pila (stack). Las referencias apuntan al montículo (heap).',time:90},
+      {type:'mc',mission:'Reto 6 · Concatenación',question:'¿Qué imprime el siguiente código Java?',fragment:`String nombre = "Java";
+int version = 17;
+System.out.println("Hola desde " + nombre + " " + version);`,hint:'El operador + con strings hace concatenación.',options:['Hola desde Java 17','Hola desde nombre version','Hola desde Java version','Error de compilación'],correct:0,explanation:'En Java, el operador + con Strings hace concatenación. "Hola desde " + "Java" + " " + 17 → "Hola desde Java 17". Java convierte automáticamente el int a String.',remember:'📌 Ojo con: System.out.println(1 + 2 + " test") → "3 test", pero println("test" + 1 + 2) → "test12"',time:60},
+      {type:'match',mission:'Reto 7 · Tipos y Ejemplos',question:'Empareja cada tipo de dato con un valor válido para ese tipo.',hint:'Clic en el tipo, luego en su ejemplo.',pairs:[{term:'int',def:'42'},{term:'double',def:'3.14'},{term:'boolean',def:'false'},{term:'char',def:"'A'"}],explanation:'Cada tipo tiene un rango y formato específico: int para enteros, double para decimales, boolean para verdadero/falso, char para un solo carácter (con comillas simples).',remember:"📌 Los char usan comillas simples ('A') y los String usan comillas dobles (\"Hola\").",time:75},
+      {type:'tf',mission:'Reto 8 · Verdadero o Falso',question:'¿Es verdadero o falso?\n"En Java es posible cambiar el tipo de una variable después de declararla, por ejemplo: int x = 5; x = \"hola\";"',hint:'Recuerda que Java es un lenguaje de tipado estático.',correct:false,explanation:'FALSO. Java es de tipado estático: una vez declarada una variable con un tipo, no puede cambiar. Asignar "hola" a una variable int causaría error de compilación.',remember:'📌 Esta restricción es una característica, no un bug: evita errores difíciles de depurar.',time:45},
+    ]
+  },
+  {
+    id:3, icon:'🔢', name:'Operadores', color:'#f89820',
+    desc:'Domina los operadores aritméticos, relacionales y lógicos para hacer cálculos y comparaciones.',
+    intro:'Los operadores son los "verbos" de la programación. Con ellos puedes hacer matemáticas, comparar valores y combinar condiciones. Son la base de toda la lógica de un programa.',
+    key:'Java tiene operadores aritméticos (+, -, *, /, %), relacionales (==, !=, <, >, <=, >=) y lógicos (&&, ||, !). Dominarlos es fundamental para escribir lógica correcta.',
+    codeExample:`// Operadores aritméticos
+int a = 10, b = 3;
+System.out.println(a + b);  // 13
+System.out.println(a - b);  // 7
+System.out.println(a * b);  // 30
+System.out.println(a / b);  // 3 (división entera)
+System.out.println(a % b);  // 1 (módulo/resto)
+
+// Operadores relacionales
+boolean mayor = (a > b);    // true
+boolean igual = (a == b);   // false`,
+    concepts:[
+      {icon:'➕',name:'Aritméticos',desc:'+, -, *, /, % para cálculos matemáticos.'},
+      {icon:'⚖️',name:'Relacionales',desc:'==, !=, <, >, <=, >= para comparaciones.'},
+      {icon:'🔗',name:'Lógicos',desc:'&& (AND), || (OR), ! (NOT) para combinar condiciones.'},
+      {icon:'📝',name:'Asignación',desc:'=, +=, -=, *=, /= para asignar valores.'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto 1 · División Entera',question:'¿Qué resultado produce 10 / 3 en Java cuando ambos son int?',fragment:`int a = 10;
+int b = 3;
+System.out.println(a / b);  // ¿?`,hint:'En Java, la división de dos enteros da un entero.',options:['3.33','3.333...','3','Error en tiempo de ejecución'],correct:2,explanation:'Cuando ambos operandos son enteros (int), Java realiza división entera y descarta los decimales. 10 / 3 = 3 (no 3.33).',remember:'📌 Para obtener decimales: double resultado = (double) a / b; → 3.333... El casting (double) es necesario.',time:60},
+      {type:'mc',mission:'Reto 2 · Módulo',question:'¿Cuánto vale la expresión 17 % 5 en Java?',fragment:`int resultado = 17 % 5;
+System.out.println(resultado);  // ¿?`,hint:'El operador % devuelve el RESTO de la división.',options:['3','2','1','0'],correct:1,explanation:'17 % 5: 17 / 5 = 3 con resto 2. El operador % (módulo) devuelve el resto de la división entera. 5 × 3 = 15, y 17 - 15 = 2.',remember:'📌 Truco clásico: (numero % 2 == 0) → el número es par. (numero % 2 != 0) → es impar.',time:60},
+      {type:'tf',mission:'Reto 3 · Comparación',question:'¿Es verdadero o falso?\n"En Java, el operador = y el operador == hacen lo mismo."',hint:'Uno asigna, el otro compara.',correct:false,explanation:'FALSO. = es asignación (guarda un valor en una variable). == es comparación (verifica si dos valores son iguales). Confundirlos es uno de los errores más comunes.',remember:'📌 int x = 5; (asigna 5 a x) vs. if (x == 5) (verifica si x vale 5).',time:45},
+      {type:'mc',mission:'Reto 4 · Operadores Lógicos',question:'¿Qué valor tiene la expresión: (5 > 3) && (10 < 8)?',fragment:`boolean resultado = (5 > 3) && (10 < 8);
+// (5 > 3) → ?
+// (10 < 8) → ?
+// true && false → ?`,hint:'&& requiere que AMBAS condiciones sean verdaderas.',options:['true','false','Error de compilación','null'],correct:1,explanation:'(5 > 3) = true, (10 < 8) = false. Con &&: true && false = false. El operador && (AND) solo devuelve true si AMBAS condiciones son true.',remember:'📌 Tabla AND: true && true = true | true && false = false | false && false = false',time:60},
+      {type:'fill',mission:'Reto 5 · Completar',question:'Completa el operador para verificar si dos variables son IGUALES.',fragment:`int a = 10;
+int b = 10;
+if (a [BLANK] b) {
+    System.out.println("Son iguales");
+}`,hint:'No es el operador de asignación.',blanks:[{placeholder:'operador',answer:'=='}],explanation:'== es el operador de igualdad en Java. Para comparar si dos valores son idénticos se usa ==, nunca = (que es asignación).',remember:'📌 Para String usa .equals(): "hola".equals("hola") → true. No uses == con objetos String.',time:60},
+      {type:'mc',mission:'Reto 6 · Incremento',question:'¿Cuál es el valor de x después de ejecutar este código?',fragment:`int x = 5;
+x += 3;
+x++;
+System.out.println(x);  // ¿?`,hint:'Sigue los pasos: primero += luego ++.',options:['5','8','9','10'],correct:2,explanation:'x = 5 → x += 3 equivale a x = x + 3 → x = 8 → x++ equivale a x = x + 1 → x = 9.',remember:'📌 x++ incrementa después de usar el valor. ++x incrementa antes. Para x = 5: y = x++ → y=5, x=6 | y = ++x → y=6, x=6.',time:60},
+      {type:'drag',mission:'Reto 7 · Clasifica Operadores',question:'Clasifica cada operador en su categoría correcta.',hint:'Piensa en qué hace cada símbolo.',categories:['➕ Aritmético','⚖️ Relacional','🔗 Lógico'],items:[{text:'%',correct:0},{text:'>=',correct:1},{text:'&&',correct:2},{text:'*',correct:0},{text:'!=',correct:1},{text:'||',correct:2}],explanation:'Los operadores se dividen en: aritméticos (operaciones matemáticas), relacionales (comparaciones) y lógicos (combinar condiciones booleanas).',remember:'📌 Los operadores relacionales siempre devuelven boolean. Los aritméticos devuelven números.',time:90},
+      {type:'mc',mission:'Reto 8 · OR Lógico',question:'¿Qué imprime el siguiente código?',fragment:`int edad = 16;
+boolean tienePermiso = true;
+if (edad >= 18 || tienePermiso) {
+    System.out.println("Puede entrar");
+} else {
+    System.out.println("No puede entrar");
+}`,hint:'|| (OR) es true si AL MENOS UNA condición es true.',options:['Puede entrar','No puede entrar','Error de compilación','No imprime nada'],correct:0,explanation:'(edad >= 18) = false, tienePermiso = true. Con ||: false || true = true. El operador || (OR) devuelve true si al menos una condición es verdadera.',remember:'📌 Tabla OR: true || true = true | true || false = true | false || false = false',time:60},
+    ]
+  },
+  {
+    id:4, icon:'🔀', name:'Condicionales', color:'#a855f7',
+    desc:'Aprende a tomar decisiones en tu código con if, else y switch para controlar el flujo del programa.',
+    intro:'Los condicionales permiten que tu programa tome decisiones. Dependiendo de una condición, el código ejecuta un camino u otro. Es la base de la lógica en cualquier programa.',
+    key:'La estructura if-else es la forma más básica de tomar decisiones. Java también ofrece switch para comparar múltiples opciones de forma más limpia.',
+    codeExample:`// Estructura if-else
+int nota = 75;
+if (nota >= 90) {
+    System.out.println("Excelente");
+} else if (nota >= 70) {
+    System.out.println("Aprobado");
+} else {
+    System.out.println("Reprobado");
+}
+
+// Switch
+String dia = "Lunes";
+switch (dia) {
+    case "Lunes": System.out.println("Inicio de semana"); break;
+    case "Viernes": System.out.println("¡Por fin!"); break;
+    default: System.out.println("Día normal");
+}`,
+    concepts:[
+      {icon:'❓',name:'if',desc:'Ejecuta un bloque solo si la condición es verdadera.'},
+      {icon:'↔️',name:'else',desc:'Alternativa cuando la condición if es falsa.'},
+      {icon:'🔢',name:'else if',desc:'Cadena de condiciones múltiples a evaluar.'},
+      {icon:'🎛️',name:'switch',desc:'Comparar una variable contra múltiples valores.'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto 1 · if Básico',question:'¿Qué imprime el siguiente código?',fragment:`int temperatura = 35;
+if (temperatura > 30) {
+    System.out.println("Hace calor");
+}
+System.out.println("Fin del programa");`,hint:'La temperatura es mayor que 30, ¿qué pasa?',options:['Solo "Fin del programa"','Solo "Hace calor"','Hace calor\nFin del programa','Error de compilación'],correct:2,explanation:'Como temperatura (35) > 30 es true, se ejecuta el println("Hace calor"). Luego, independientemente del if, se ejecuta println("Fin del programa").',remember:'📌 El código después de un if (sin else) siempre se ejecuta, a menos que esté dentro de otro bloque {}.',time:60},
+      {type:'mc',mission:'Reto 2 · if-else',question:'¿Cuál es la salida de este código?',fragment:`int numero = -5;
+if (numero > 0) {
+    System.out.println("Positivo");
+} else {
+    System.out.println("No positivo");
+}`,hint:'El else se ejecuta cuando la condición es falsa.',options:['Positivo','No positivo','Positivo y No positivo','Nada'],correct:1,explanation:'-5 > 0 es false, por lo que se ejecuta el bloque else y se imprime "No positivo".',remember:'📌 Un if-else garantiza que solo uno de los dos bloques se ejecute, nunca ambos.',time:45},
+      {type:'fill',mission:'Reto 3 · Completar',question:'Completa el código para verificar si un número es par o impar.',fragment:`int numero = 4;
+if (numero [BLANK] == 0) {
+    System.out.println("Par");
+} else {
+    System.out.println("Impar");
+}`,hint:'Usa el operador módulo para verificar el resto.',blanks:[{placeholder:'operador',answer:'%2'}],explanation:'numero % 2 calcula el resto de dividir por 2. Si el resto es 0, el número es par. Si es 1, es impar.',remember:'📌 Este es uno de los usos más clásicos del módulo (%). Siempre útil para verificar paridad.',time:60},
+      {type:'mc',mission:'Reto 4 · else if',question:'Con nota = 85, ¿qué imprime el siguiente código?',fragment:`int nota = 85;
+if (nota >= 90) {
+    System.out.println("A");
+} else if (nota >= 80) {
+    System.out.println("B");
+} else if (nota >= 70) {
+    System.out.println("C");
+} else {
+    System.out.println("F");
+}`,hint:'Evalúa cada condición en orden, de arriba hacia abajo.',options:['A','B','C','F'],correct:1,explanation:'nota=85: ¿85>=90? No. ¿85>=80? Sí → imprime "B" y termina la cadena. Los demás else if no se evalúan.',remember:'📌 En una cadena else-if, el PRIMER bloque cuya condición sea true se ejecuta y los demás se saltan.',time:60},
+      {type:'mc',mission:'Reto 5 · switch',question:'¿Qué imprime este código con dia = "Martes"?',fragment:`String dia = "Martes";
+switch (dia) {
+    case "Lunes":
+        System.out.println("Inicio");
+        break;
+    case "Martes":
+        System.out.println("Segundo día");
+        break;
+    default:
+        System.out.println("Otro día");
+}`,hint:'El switch compara el valor contra cada case.',options:['Inicio','Segundo día','Otro día','Inicio y Segundo día'],correct:1,explanation:'dia = "Martes" coincide con case "Martes", por lo que imprime "Segundo día". El break evita que continúe al siguiente case.',remember:'📌 Sin break, el switch "cae" al siguiente case (fall-through). Esto puede ser un bug o una característica intencional.',time:60},
+      {type:'tf',mission:'Reto 6 · Verdadero o Falso',question:'¿Es verdadero o falso?\n"En un switch de Java, el case default es obligatorio."',hint:'Piensa en qué pasa si ningún case coincide y no hay default.',correct:false,explanation:'FALSO. El case default es opcional. Si ningún case coincide y no hay default, simplemente no se ejecuta nada dentro del switch.',remember:'📌 Aunque no es obligatorio, usar default es buena práctica para manejar casos inesperados.',time:45},
+      {type:'match',mission:'Reto 7 · Empareja Estructuras',question:'Empareja cada estructura con su descripción.',hint:'Clic en la estructura, luego en su descripción.',pairs:[{term:'if',def:'Condición simple verdadero/falso'},{term:'else',def:'Alternativa cuando if es falso'},{term:'else if',def:'Condición adicional encadenada'},{term:'switch',def:'Compara múltiples valores'}],explanation:'Cada estructura de control tiene su caso de uso. if-else para lógica binaria, else-if para múltiples condiciones, switch para comparar un valor contra constantes.',remember:'📌 Prefiere switch cuando compares una variable contra muchos valores fijos (menú, opciones, días).',time:75},
+      {type:'mc',mission:'Reto 8 · Operador Ternario',question:'¿Qué imprime este código con edad = 20?',fragment:`int edad = 20;
+String estado = (edad >= 18) ? "Mayor" : "Menor";
+System.out.println(estado);`,hint:'El operador ternario es una forma corta de if-else.',options:['Mayor','Menor','Error de compilación','null'],correct:0,explanation:'El operador ternario: condición ? valorSiTrue : valorSiFalse. (20 >= 18) es true → estado = "Mayor".',remember:'📌 El ternario es perfecto para asignaciones simples. Evítalo en lógicas complejas (reduce legibilidad).',time:60},
+    ]
+  },
+  {
+    id:5, icon:'🔁', name:'Bucles', color:'#22c55e',
+    desc:'Aprende a repetir acciones con bucles for, while y do-while para evitar código repetitivo.',
+    intro:'Los bucles permiten repetir un bloque de código múltiples veces. Sin ellos, tendrías que escribir System.out.println() mil veces para imprimir mil números. Los bucles hacen el trabajo automáticamente.',
+    key:'Java tiene tres tipos de bucles: for (cuando sabes cuántas veces repetir), while (mientras una condición sea verdadera) y do-while (ejecuta al menos una vez antes de verificar).',
+    codeExample:`// Bucle for
+for (int i = 0; i < 5; i++) {
+    System.out.println("Vuelta: " + i);
+}
+
+// Bucle while
+int contador = 0;
+while (contador < 3) {
+    System.out.println("Contador: " + contador);
+    contador++;
+}
+
+// For-each con array
+int[] numeros = {1, 2, 3, 4, 5};
+for (int num : numeros) {
+    System.out.println(num);
+}`,
+    concepts:[
+      {icon:'🔄',name:'for',desc:'Repite cuando sabes el número de iteraciones.'},
+      {icon:'⏳',name:'while',desc:'Repite mientras una condición sea verdadera.'},
+      {icon:'▶️',name:'do-while',desc:'Ejecuta al menos una vez, luego verifica.'},
+      {icon:'🛑',name:'break/continue',desc:'Rompe o salta iteraciones del bucle.'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto 1 · Bucle for',question:'¿Cuántas veces imprime algo este bucle?',fragment:`for (int i = 0; i < 5; i++) {
+    System.out.println("Hola " + i);
+}`,hint:'El bucle va de 0 hasta (pero sin incluir) 5.',options:['4 veces','5 veces','6 veces','Infinitas veces'],correct:1,explanation:'El for comienza en i=0 y continúa mientras i<5. Los valores de i son: 0, 1, 2, 3, 4 → 5 iteraciones en total.',remember:'📌 Estructura del for: (inicialización; condición; incremento). El bucle se ejecuta mientras la condición sea true.',time:60},
+      {type:'fill',mission:'Reto 2 · Completar For',question:'Completa el bucle para imprimir los números del 1 al 10.',fragment:`for ([BLANK]; i <= 10; i++) {
+    System.out.println(i);
+}`,hint:'El bucle debe iniciar en i = 1.',blanks:[{placeholder:'inicialización',answer:'int i = 1'}],explanation:'La inicialización int i = 1 establece el punto de partida. La condición i <= 10 hace que se imprima el 10 inclusive.',remember:'📌 Nota: i < 10 imprimiría hasta el 9. i <= 10 incluye el 10. ¡Los límites importan!',time:60},
+      {type:'mc',mission:'Reto 3 · Bucle while',question:'¿Cuántas veces imprime "Hola" este bucle while?',fragment:`int i = 10;
+while (i > 0) {
+    System.out.println("Hola");
+    i -= 3;
+}`,hint:'Sigue el valor de i: 10, 7, 4, 1, y luego...',options:['3 veces','4 veces','5 veces','Infinitas veces'],correct:1,explanation:'i=10: 10>0 ✓ imprime, i=7. i=7: 7>0 ✓ imprime, i=4. i=4: 4>0 ✓ imprime, i=1. i=1: 1>0 ✓ imprime, i=-2. i=-2: -2>0 ✗ termina. Total: 4 veces.',remember:'📌 Siempre verifica que tu bucle while tiene una condición que eventualmente se vuelva false, o tendrás un bucle infinito.',time:75},
+      {type:'tf',mission:'Reto 4 · do-while',question:'¿Es verdadero o falso?\n"Un bucle do-while ejecuta su cuerpo al menos una vez, incluso si la condición inicial es falsa."',hint:'La diferencia clave entre while y do-while.',correct:true,explanation:'VERDADERO. En do-while, el cuerpo se ejecuta PRIMERO y la condición se verifica DESPUÉS. Garantiza al menos una ejecución.',remember:'📌 do { código; } while (condición); → ideal para menús: muestra el menú primero, luego pregunta si continuar.',time:45},
+      {type:'mc',mission:'Reto 5 · break',question:'¿Qué imprime este código?',fragment:`for (int i = 1; i <= 10; i++) {
+    if (i == 5) {
+        break;
+    }
+    System.out.println(i);
+}`,hint:'break interrumpe el bucle completamente.',options:['1, 2, 3, 4, 5','1, 2, 3, 4','6, 7, 8, 9, 10','1 hasta 10'],correct:1,explanation:'El bucle imprime 1, 2, 3, 4 y cuando i llega a 5, el break termina el bucle. El 5 no se imprime porque el break ocurre antes del println.',remember:'📌 break sale del bucle completamente. continue salta solo la iteración actual y continúa con la siguiente.',time:60},
+      {type:'match',mission:'Reto 6 · Empareja Bucles',question:'Empareja cada tipo de bucle con su descripción.',hint:'Clic en el bucle, luego en su descripción.',pairs:[{term:'for',def:'Ideal cuando conoces las iteraciones'},{term:'while',def:'Repite mientras condición sea true'},{term:'do-while',def:'Ejecuta el cuerpo al menos una vez'},{term:'break',def:'Termina el bucle inmediatamente'}],explanation:'Cada tipo de bucle tiene su caso de uso específico. La elección del bucle correcto hace el código más legible y eficiente.',remember:'📌 El for-each (for(tipo var : coleccion)) es ideal para recorrer arrays y listas sin manejar índices.',time:75},
+      {type:'mc',mission:'Reto 7 · Bucle Anidado',question:'¿Cuántas veces imprime "*" el siguiente bucle anidado?',fragment:`for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+        System.out.print("*");
+    }
+}`,hint:'Multiplica las iteraciones del bucle externo por las del interno.',options:['3 veces','6 veces','9 veces','12 veces'],correct:2,explanation:'El bucle externo (i) itera 3 veces. Por cada iteración del externo, el bucle interno (j) itera 3 veces. Total: 3 × 3 = 9 asteriscos.',remember:'📌 Los bucles anidados son esenciales para trabajar con matrices (arrays 2D) y tablas de datos.',time:60},
+      {type:'fill',mission:'Reto 8 · For-Each',question:'Completa el bucle for-each para recorrer el array de nombres.',fragment:`String[] nombres = {"Ana", "Luis", "María"};
+for ([BLANK] : nombres) {
+    System.out.println(nombre);
+}`,hint:'Declara la variable que recibirá cada elemento.',blanks:[{placeholder:'declaración',answer:'String nombre'}],explanation:'El for-each: for(Tipo variable : coleccion). En cada iteración, "variable" toma el valor del elemento actual del array.',remember:'📌 El for-each es más legible que el for tradicional cuando no necesitas el índice.',time:60},
+    ]
+  },
+  {
+    id:6, icon:'🔧', name:'Funciones y Métodos', color:'#ec4899',
+    desc:'Aprende a crear métodos en Java para organizar y reutilizar tu código de forma eficiente.',
+    intro:'Los métodos (también llamados funciones) son bloques de código con nombre que realizan una tarea específica. Permiten reutilizar código sin repetirlo, y hacen los programas más organizados y fáciles de mantener.',
+    key:'Un método en Java tiene: tipo de retorno, nombre, parámetros y cuerpo. Si no devuelve nada, usa "void". Si devuelve un valor, usa el tipo correspondiente y la palabra "return".',
+    codeExample:`// Método que no devuelve nada (void)
+public static void saludar(String nombre) {
+    System.out.println("Hola, " + nombre + "!");
+}
+
+// Método que devuelve un valor
+public static int sumar(int a, int b) {
+    return a + b;
+}
+
+// Uso de los métodos
+public static void main(String[] args) {
+    saludar("María");           // Hola, María!
+    int resultado = sumar(5, 3); // resultado = 8
+    System.out.println(resultado);
+}`,
+    concepts:[
+      {icon:'📤',name:'void',desc:'El método no devuelve ningún valor.'},
+      {icon:'↩️',name:'return',desc:'Devuelve un valor y termina el método.'},
+      {icon:'📥',name:'Parámetros',desc:'Variables que recibe el método al ser llamado.'},
+      {icon:'📢',name:'Llamada',desc:'Invocar el método para ejecutarlo.'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto 1 · Declarar Método',question:'¿Cuál es la declaración correcta de un método que recibe dos enteros y devuelve su suma?',fragment:`// El método debe:
+// - Recibir dos int: a y b
+// - Devolver un int (la suma)`,hint:'Tipo de retorno va primero, luego nombre y parámetros.',options:['void sumar(int a, int b)','int sumar(int a, int b)','sumar(int a, int b): int','int sumar()'],correct:1,explanation:'"int sumar(int a, int b)" declara un método llamado "sumar" que recibe dos enteros (a y b) y devuelve un int. El tipo antes del nombre es el tipo de retorno.',remember:'📌 Siempre que uses return con un valor, el tipo de retorno debe coincidir con el tipo declarado.',time:60},
+      {type:'tf',mission:'Reto 2 · void',question:'¿Es verdadero o falso?\n"Un método declarado como void puede usar la instrucción return para terminar antes."',hint:'¿Puede void tener un return sin valor?',correct:true,explanation:'VERDADERO. Un método void puede usar "return;" (sin valor) para terminar anticipadamente. No puede usar "return valor;" pero sí "return;" solo.',remember:'📌 Ejemplo: if (condicion) return; → sale del método inmediatamente sin ejecutar el resto.',time:45},
+      {type:'fill',mission:'Reto 3 · Método Completo',question:'Completa el método para calcular el cuadrado de un número.',fragment:`public static int cuadrado(int n) {
+    [BLANK] n * n;
+}`,hint:'La palabra clave que devuelve un valor.',blanks:[{placeholder:'palabra clave',answer:'return'}],explanation:'"return" devuelve el valor calculado (n * n) y termina la ejecución del método. El tipo de retorno "int" debe coincidir con el valor retornado.',remember:'📌 Un método int DEBE tener un return que devuelva un int en todos los caminos posibles de ejecución.',time:60},
+      {type:'mc',mission:'Reto 4 · Parámetros',question:'¿Cuántos valores imprime el siguiente código?',fragment:`public static void imprimirDoble(int n) {
+    System.out.println(n * 2);
+}
+
+public static void main(String[] args) {
+    imprimirDoble(5);
+    imprimirDoble(10);
+    imprimirDoble(3);
+}`,hint:'Cuenta cuántas veces se llama el método.',options:['1 valor','2 valores','3 valores','Ninguno'],correct:2,explanation:'El método imprimirDoble se llama 3 veces con valores 5, 10 y 3. Imprime: 10, 20, 6. Total 3 valores.',remember:'📌 Puedes llamar un método tantas veces como quieras. Eso es la reutilización de código.',time:60},
+      {type:'match',mission:'Reto 5 · Empareja Conceptos',question:'Empareja cada término de métodos con su descripción.',hint:'Clic en el término, luego en su descripción.',pairs:[{term:'void',def:'No devuelve ningún valor'},{term:'return',def:'Devuelve un valor y finaliza'},{term:'parámetro',def:'Variable que recibe el método'},{term:'argumento',def:'Valor enviado al llamar el método'}],explanation:'Es importante distinguir entre parámetro (definición) y argumento (llamada). También entre void (sin retorno) y return con valor.',remember:'📌 En sumar(int a, int b): a y b son parámetros. En sumar(5, 3): 5 y 3 son argumentos.',time:75},
+      {type:'mc',mission:'Reto 6 · Overloading',question:'¿Qué es la sobrecarga de métodos (method overloading) en Java?',fragment:`// Ejemplo de sobrecarga:
+public static int sumar(int a, int b) { ... }
+public static double sumar(double a, double b) { ... }
+public static int sumar(int a, int b, int c) { ... }`,hint:'Observa que los tres métodos se llaman igual pero son diferentes.',options:['Llamar un método más de 10 veces','Tener métodos con el mismo nombre pero diferentes parámetros','Copiar el código de un método en otro','Un error de programación'],correct:1,explanation:'Method overloading: múltiples métodos con el MISMO nombre pero diferentes parámetros (diferente número, tipos o ambos). Java elige el correcto según los argumentos.',remember:'📌 El tipo de retorno SOLO no diferencia métodos sobrecargados. Los parámetros son los que deben cambiar.',time:60},
+      {type:'drag',mission:'Reto 7 · Organiza el Método',question:'Arrastra cada parte a donde pertenece en la estructura de un método.',hint:'Recuerda el orden: modificador, retorno, nombre, params, cuerpo.',categories:['🔵 Tipo de Retorno','🟠 Nombre del Método','🟢 Parámetros'],items:[{text:'int',correct:0},{text:'calcularArea',correct:1},{text:'(double base, double altura)',correct:2},{text:'void',correct:0},{text:'imprimirMensaje',correct:1},{text:'(String texto)',correct:2}],explanation:'La firma de un método en Java: modificadores + tipo_retorno + nombre + (parámetros) + { cuerpo }',remember:'📌 public static int miMetodo(int a) → public/static son modificadores, int es el retorno, a es el parámetro.',time:90},
+      {type:'mc',mission:'Reto 8 · Recursión',question:'¿Qué calcula este método recursivo?',fragment:`public static int factorial(int n) {
+    if (n == 0) return 1;
+    return n * factorial(n - 1);
+}
+// factorial(4) → ?`,hint:'Rastrea la recursión: 4 * factorial(3) * ...',options:['10','24','16','Entra en bucle infinito'],correct:1,explanation:'factorial(4) = 4 * factorial(3) = 4 * 3 * factorial(2) = 4 * 3 * 2 * factorial(1) = 4 * 3 * 2 * 1 * factorial(0) = 4 * 3 * 2 * 1 * 1 = 24.',remember:'📌 La recursión necesita un CASO BASE (n==0) que la detenga. Sin él, sería un StackOverflowError.',time:75},
+    ]
+  },
+  {
+    id:7, icon:'📋', name:'Arreglos (Arrays)', color:'#06b6d4',
+    desc:'Aprende a manejar colecciones de datos con arrays unidimensionales y bidimensionales en Java.',
+    intro:'Los arrays son colecciones de elementos del mismo tipo guardados en memoria contigua. En lugar de tener 10 variables para 10 notas, usas un solo array de 10 posiciones.',
+    key:'En Java los arrays se declaran con corchetes: int[] notas = new int[5]; Los índices comienzan en 0, por lo que el primer elemento es notas[0] y el último es notas[notas.length - 1].',
+    codeExample:`// Declarar e inicializar un array
+int[] notas = {90, 75, 88, 92, 70};
+
+// Acceder a elementos (índice desde 0)
+System.out.println(notas[0]);  // 90
+System.out.println(notas[4]);  // 70
+
+// Recorrer con for-each
+for (int nota : notas) {
+    System.out.println(nota);
+}
+
+// Array 2D (matriz)
+int[][] matriz = {{1, 2}, {3, 4}, {5, 6}};
+System.out.println(matriz[1][0]);  // 3`,
+    concepts:[
+      {icon:'📊',name:'Índice',desc:'Posición del elemento, comienza en 0.'},
+      {icon:'📏',name:'.length',desc:'Propiedad que devuelve el tamaño del array.'},
+      {icon:'🔲',name:'Array 2D',desc:'Tabla de filas y columnas (matriz).'},
+      {icon:'⚠️',name:'ArrayIndexOutOfBounds',desc:'Error al acceder a un índice inválido.'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto 1 · Declarar Array',question:'¿Cuál es la forma correcta de declarar un array de 5 enteros en Java?',fragment:`// Necesitas un array llamado "edades"
+// con capacidad para 5 enteros`,hint:'Los arrays se declaran con [] y se crean con new.',options:['int edades = new int[5];','int[] edades = new int[5];','array<int> edades = new array(5);','int edades[5];'],correct:1,explanation:'"int[] edades = new int[5];" declara un array de enteros con 5 posiciones. También puedes escribir "int edades[] = new int[5];" pero la primera forma es preferida.',remember:'📌 Alternativa con inicialización directa: int[] edades = {20, 25, 30, 35, 40};',time:60},
+      {type:'mc',mission:'Reto 2 · Índices',question:'¿Cuál es el índice del ÚLTIMO elemento de un array con 8 posiciones?',fragment:`int[] datos = new int[8];
+// Posiciones: [0][1][2][3][4][5][6][?]`,hint:'Los índices van de 0 hasta longitud-1.',options:['8','7','6','datos.length'],correct:1,explanation:'Un array de 8 elementos tiene índices del 0 al 7. El último índice es siempre longitud - 1. datos[7] accede al último elemento.',remember:'📌 Acceder a datos[8] causaría ArrayIndexOutOfBoundsException. El índice válido máximo es 7.',time:60},
+      {type:'fill',mission:'Reto 3 · Acceder Elemento',question:'Completa el código para imprimir el TERCER elemento del array.',fragment:`String[] colores = {"Rojo", "Verde", "Azul", "Amarillo"};
+System.out.println(colores[[BLANK]]);
+// Debe imprimir "Azul"`,hint:'El tercer elemento está en la posición 2 (recuerda: inicia en 0).',blanks:[{placeholder:'índice',answer:'2'}],explanation:'Los índices comienzan en 0: colores[0]="Rojo", colores[1]="Verde", colores[2]="Azul". El tercer elemento está en el índice 2.',remember:'📌 Esta diferencia (índice 0 vs posición 1) confunde a muchos principiantes. Practica hasta que sea automático.',time:60},
+      {type:'mc',mission:'Reto 4 · length',question:'¿Qué imprime el siguiente código?',fragment:`int[] numeros = {10, 20, 30, 40, 50};
+System.out.println(numeros.length);`,hint:'.length devuelve cuántos elementos tiene el array.',options:['4','5','50','numeros'],correct:1,explanation:'numeros.length devuelve 5, que es la cantidad de elementos del array (10, 20, 30, 40, 50).',remember:'📌 Importante: es .length (propiedad del array) sin paréntesis. No confundir con String.length() (método de String, con paréntesis).',time:45},
+      {type:'tf',mission:'Reto 5 · Verdadero o Falso',question:'¿Es verdadero o falso?\n"En Java, un array puede contener elementos de diferentes tipos, por ejemplo: int, String y boolean mezclados."',hint:'Recuerda que Java es fuertemente tipado.',correct:false,explanation:'FALSO. En Java, los arrays son de tipo homogéneo: todos los elementos deben ser del mismo tipo. Para mezclar tipos, se usa Object[] o colecciones como ArrayList.',remember:'📌 Para flexibilidad de tipos, usa ArrayList<Object> o ArrayList<> con generics en Java moderno.',time:45},
+      {type:'mc',mission:'Reto 6 · Recorrer Array',question:'¿Cuál es la forma más correcta de recorrer todos los elementos de un array en Java cuando NO necesitas el índice?',fragment:`int[] valores = {5, 10, 15, 20, 25};
+// ¿Cuál bucle es más apropiado?`,options:['for (int i = 0; i < valores.length; i++)','for (int v : valores)','while (valores != null)','do { } while (true)'],correct:1,explanation:'El for-each (for(int v : valores)) es la forma más limpia y legible cuando solo necesitas los valores, no los índices.',remember:'📌 Usa for-each cuando solo necesites los valores. Usa for tradicional cuando necesites el índice (para modificar o comparar posiciones).',time:60},
+      {type:'drag',mission:'Reto 7 · Ordena el Código',question:'Arrastra cada fragmento a la categoría correcta: sintaxis válida o inválida de arrays en Java.',hint:'Recuerda la sintaxis correcta de Java para arrays.',categories:['✅ Sintaxis Válida','❌ Sintaxis Inválida'],items:[{text:"int[] nums = {1,2,3};",correct:0},{text:"int nums = new int[3];",correct:1},{text:"String[] s = new String[5];",correct:0},{text:"array<int> a = new array(3);",correct:1},{text:"int[] n = new int[10];",correct:0}],explanation:'La sintaxis correcta es: Tipo[] nombre = new Tipo[tamaño]; o Tipo[] nombre = {val1, val2, ...};',remember:'📌 Java no usa la sintaxis de C++ (array<int>) ni permite declarar arrays sin los corchetes en el tipo.',time:90},
+      {type:'mc',mission:'Reto 8 · Array 2D',question:'¿Qué imprime el siguiente código con un array 2D?',fragment:`int[][] tabla = {
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 9}
+};
+System.out.println(tabla[1][2]);`,hint:'Recuerda: [fila][columna], empezando en 0.',options:['2','5','6','8'],correct:2,explanation:'tabla[1][2]: fila 1 (la segunda: {4,5,6}), columna 2 (el tercer elemento: 6). Resultado: 6.',remember:'📌 Para un array 2D: tabla[i][j] accede a la fila i, columna j. Ambos índices empiezan en 0.',time:60},
+    ]
+  },
+  {
+    id:8, icon:'🏆', name:'Mini Retos Finales', color:'#f59e0b',
+    desc:'Pon a prueba todo lo aprendido con retos que combinan variables, bucles, condicionales y métodos.',
+    intro:'¡Has llegado al mundo final! Aquí combinarás todos los conceptos que has aprendido: variables, operadores, condicionales, bucles, métodos y arrays. Estos retos son más desafiantes pero reflejan situaciones reales de programación.',
+    key:'La programación real combina todos los conceptos juntos. Un programa útil usa variables para guardar datos, condicionales para tomar decisiones, bucles para iterar y métodos para organizar el código.',
+    codeExample:`// Reto integrador: promedio de notas
+public class Promedio {
+    public static double calcularPromedio(int[] notas) {
+        int suma = 0;
+        for (int nota : notas) {
+            suma += nota;
+        }
+        return (double) suma / notas.length;
+    }
+    
+    public static void main(String[] args) {
+        int[] notas = {85, 90, 78, 92, 88};
+        double promedio = calcularPromedio(notas);
+        if (promedio >= 70) {
+            System.out.println("Aprobado: " + promedio);
+        }
+    }
+}`,
+    concepts:[
+      {icon:'🧩',name:'Integración',desc:'Combinar variables, condicionales, bucles y métodos.'},
+      {icon:'🐛',name:'Debugging',desc:'Encontrar y corregir errores en el código.'},
+      {icon:'✨',name:'Buenas Prácticas',desc:'Código limpio, comentado y bien organizado.'},
+      {icon:'🚀',name:'Pensamiento Lógico',desc:'Descomponer problemas en pasos simples.'},
+    ],
+    levels:[
+      {type:'mc',mission:'Reto Final 1 · Traza de Código',question:'¿Qué imprime exactamente este código?',fragment:`int suma = 0;
+for (int i = 1; i <= 4; i++) {
+    suma += i;
+}
+System.out.println("Suma: " + suma);`,hint:'Rastrea el valor de suma en cada iteración.',options:['Suma: 4','Suma: 10','Suma: 16','Suma: 1234'],correct:1,explanation:'i=1: suma=1 | i=2: suma=3 | i=3: suma=6 | i=4: suma=10. La suma de 1+2+3+4 = 10.',remember:'📌 La suma de los primeros n números: n*(n+1)/2. Para n=4: 4*5/2 = 10. ¡Útil saberlo!',time:75},
+      {type:'mc',mission:'Reto Final 2 · Bug Hunt',question:'¿Por qué el siguiente código tiene un bug?',fragment:`// El código debería imprimir los pares del 1 al 10
+for (int i = 1; i <= 10; i++) {
+    if (i % 2 = 0) {
+        System.out.println(i);
+    }
+}`,hint:'Observa el operador dentro del if.',options:['El bucle for está mal declarado','Se usa = en lugar de == en la condición','Falta un punto y coma','El System.out está mal escrito'],correct:1,explanation:'i % 2 = 0 usa el operador de asignación (=) en lugar del de comparación (==). Debe ser i % 2 == 0. Este es uno de los bugs más comunes en Java.',remember:'📌 Java detecta este error en compilación para tipos primitivos. En C, este bug podría pasar desapercibido.',time:60},
+      {type:'fill',mission:'Reto Final 3 · Completar Lógica',question:'Completa el código para encontrar el número mayor entre dos variables.',fragment:`int a = 45, b = 72;
+int mayor;
+if (a > b) {
+    mayor = a;
+} [BLANK] {
+    mayor = b;
+}
+System.out.println("Mayor: " + mayor);`,hint:'La palabra que va entre bloques if cuando la condición es falsa.',blanks:[{placeholder:'palabra',answer:'else'}],explanation:'"else" maneja el caso cuando la condición if es falsa. Si a no es mayor que b, entonces b es el mayor.',remember:'📌 Versión alternativa con ternario: int mayor = (a > b) ? a : b; ← más compacto.',time:60},
+      {type:'mc',mission:'Reto Final 4 · Método + Bucle',question:'¿Qué devuelve el método con el argumento dado?',fragment:`public static int contarPares(int[] arr) {
+    int cuenta = 0;
+    for (int n : arr) {
+        if (n % 2 == 0) cuenta++;
+    }
+    return cuenta;
+}
+// Llamada: contarPares(new int[]{1,2,4,7,8,9})`,hint:'Cuenta los números pares en el array.',options:['2','3','4','6'],correct:1,explanation:'Array: {1,2,4,7,8,9}. Pares: 2, 4, 8 → 3 números pares. El método cuenta los elementos donde n%2==0.',remember:'📌 Desglosar el problema: ¿qué hace el bucle? ¿qué hace el condicional? ¿qué acumula la variable?',time:75},
+      {type:'mc',mission:'Reto Final 5 · Buenas Prácticas',question:'¿Cuál de estas opciones representa mejor una buena práctica de programación en Java?',fragment:`// Opción A:
+int x = 5;
+int y = 10;
+int z = x + y;
+
+// Opción B:
+int precioProducto = 5;
+int cantidadUnidades = 10;
+int costoTotal = precioProducto * cantidadUnidades;`,hint:'Los nombres de variables deben ser descriptivos.',options:['Opción A: variables cortas ocupan menos memoria','Opción B: nombres descriptivos mejoran la legibilidad','Ambas son igualmente buenas','Ninguna: Java requiere nombres en inglés'],correct:1,explanation:'La Opción B usa nombres descriptivos (camelCase) que explican qué guarda cada variable. El código se lee como prosa: "costoTotal = precioProducto * cantidadUnidades".',remember:'📌 Regla de oro: el código se escribe una vez pero se lee cien veces. Prioriza la legibilidad.',time:60},
+      {type:'tf',mission:'Reto Final 6 · Buenas Prácticas',question:'¿Es verdadero o falso?\n"Es buena práctica en Java usar números mágicos directamente en el código, como: if (edad > 18)".',hint:'Los "números mágicos" son valores sin nombre que aparecen en el código.',correct:false,explanation:'FALSO. Los números mágicos hacen el código difícil de entender y mantener. Mejor: final int EDAD_MAYORÍA = 18; if (edad > EDAD_MAYORÍA). Las constantes tienen nombre y son fáciles de cambiar.',remember:'📌 Usa constantes con final: final int MAX_INTENTOS = 3; final double PI = 3.14159;',time:45},
+      {type:'match',mission:'Reto Final 7 · Error → Solución',question:'Empareja cada error Java con su causa correcta.',hint:'Clic en el error, luego en su causa.',pairs:[{term:'NullPointerException',def:'Usar objeto que es null'},{term:'ArrayIndexOutOfBounds',def:'Índice fuera del rango del array'},{term:'ClassCastException',def:'Conversión de tipo incorrecta'},{term:'StackOverflowError',def:'Recursión sin caso base'}],explanation:'Conocer los errores comunes de Java acelera el debugging. Cada excepción tiene un mensaje claro que indica dónde falló el programa.',remember:'📌 Las excepciones son tus amigas: te dicen exactamente qué salió mal y en qué línea.',time:90},
+      {type:'mc',mission:'Reto Final 8 · Reto Integrador',question:'Un método recibe un array de notas (int[]) y debe devolver "Aprobado" si el promedio es >= 60, o "Reprobado" si no. ¿Cuál es la firma correcta del método?',fragment:`// El método debe:
+// 1. Calcular el promedio de int[]
+// 2. Comparar con 60
+// 3. Devolver un String`,hint:'¿Qué tipo devuelve el método? ¿Qué parámetro recibe?',options:['public static void evaluar(int[] notas)','public static boolean evaluar(int promedio)','public static String evaluar(int[] notas)','public static int evaluar(String notas)'],correct:2,explanation:'"public static String evaluar(int[] notas)" es correcto: recibe un array de int para calcular el promedio, y devuelve String ("Aprobado"/"Reprobado").',remember:'📌 El diseño de métodos sigue la regla de responsabilidad única: cada método debe hacer UNA sola cosa bien.',time:75},
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════
+   LOCAL STORAGE
+═══════════════════════════════════════ */
+const LS = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+function getAllUsers() { return LS.get('jq_users') || {}; }
+function saveUsers(u) { LS.set('jq_users', u); }
+function getUser(nick) { const u = getAllUsers(); return u[nick] || null; }
+function saveUser(nick, data) { const u = getAllUsers(); u[nick] = data; saveUsers(u); }
+function newUser(nick) { return { nick, score: 0, worldsDone: [], worldScores: {}, attempts: 0, createdAt: Date.now(), lastSeen: Date.now() }; }
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let state = {
+  nick: null, soundOn: true, theme: 'dark',
+  currentWorld: null, currentLevelIndex: 0,
+  score: 0, lives: 3,
+  timerInterval: null, timerSeconds: 60, timerMax: 60,
+  answered: false, matchState: null, dragState: null,
+};
+
+/* ═══════════════════════════════════════
+   AUDIO
+═══════════════════════════════════════ */
+let audioCtx = null;
+function getAudioCtx() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+function playTone(freq, type, dur, vol=0.18, delay=0) {
+  if (!state.soundOn) return;
+  try {
+    const ctx = getAudioCtx(), osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime+delay);
+    gain.gain.setValueAtTime(vol, ctx.currentTime+delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+delay+dur);
+    osc.start(ctx.currentTime+delay); osc.stop(ctx.currentTime+delay+dur);
+  } catch {}
+}
+const SFX = {
+  start: () => { playTone(440,'sine',.12,.15); playTone(554,'sine',.12,.12,.12); playTone(659,'sine',.22,.1,.24); },
+  select: () => { playTone(330,'triangle',.06,.1); },
+  correct: () => { playTone(523,'sine',.1,.15); playTone(659,'sine',.1,.12,.1); playTone(784,'sine',.18,.1,.22); },
+  wrong: () => { playTone(220,'sawtooth',.1,.14); playTone(185,'sawtooth',.18,.1,.12); },
+  alert: () => { playTone(880,'square',.05,.07); playTone(880,'square',.05,.07,.1); },
+  done: () => { [523,659,784,1047].forEach((f,i) => playTone(f,'sine',.18,.1,i*.1)); },
+};
+
+/* ═══════════════════════════════════════
+   CONFETTI
+═══════════════════════════════════════ */
+const cnv = document.getElementById('confettiCanvas');
+const cx = cnv.getContext('2d');
+let cPieces = [], cAnim = null;
+function startConfetti() {
+  cnv.width = window.innerWidth; cnv.height = window.innerHeight;
+  cPieces = Array.from({length:80}, () => ({
+    x:Math.random()*cnv.width, y:Math.random()*-180, r:Math.random()*7+3,
+    color:['#00d4aa','#00b4d8','#f89820','#ff6b6b','#a855f7','#fff'][Math.floor(Math.random()*6)],
+    tilt:Math.random()*10-10, ts:Math.random()*.1+.05, speed:Math.random()*3+1,
+  }));
+  if (cAnim) cancelAnimationFrame(cAnim);
+  drawConfetti(); setTimeout(stopConfetti, 3000);
+}
+function drawConfetti() {
+  cx.clearRect(0,0,cnv.width,cnv.height);
+  cPieces.forEach(p => {
+    cx.beginPath(); cx.ellipse(p.x,p.y,p.r,p.r/2,p.tilt,0,2*Math.PI);
+    cx.fillStyle=p.color; cx.fill();
+    p.y+=p.speed; p.tilt+=p.ts; p.x+=Math.sin(p.tilt)*.5;
+  });
+  cPieces = cPieces.filter(p => p.y < cnv.height+20);
+  if (cPieces.length) cAnim = requestAnimationFrame(drawConfetti);
+}
+function stopConfetti() { if (cAnim) cancelAnimationFrame(cAnim); cx.clearRect(0,0,cnv.width,cnv.height); cPieces = []; }
+
+/* ═══════════════════════════════════════
+   AMBIENT
+═══════════════════════════════════════ */
+function buildAmbient() {
+  const layer = document.getElementById('ambientLayer');
+  layer.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const el = document.createElement('span');
+    el.className = 'ambient-icon';
+    el.textContent = AMBIENT_ICONS[i % AMBIENT_ICONS.length];
+    el.style.left = Math.random()*100+'vw';
+    
+    // Inyectamos los tiempos aleatorios como variables CSS nativas
+    el.style.setProperty('--float-dur', (22 + Math.random() * 28) + 's');
+    el.style.setProperty('--float-del', -(Math.random() * 28) + 's');
+    
+    el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+    layer.appendChild(el);
+  }
+}
+
+/* ═══════════════════════════════════════
+   THEME / SOUND
+═══════════════════════════════════════ */
+function toggleTheme() {
+  state.theme = state.theme==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme', state.theme);
+  document.getElementById('btnTheme').textContent = state.theme==='dark'?'🌙':'☀️';
+}
+function toggleSound(btn) {
+  state.soundOn = !state.soundOn;
+  const icon = state.soundOn?'🔊':'🔇';
+  btn.textContent = icon;
+  const gb = document.getElementById('btnGameSound');
+  if (gb) gb.textContent = icon;
+}
+
+/* ═══════════════════════════════════════
+   SCREEN MANAGEMENT
+═══════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════════════
+   NICK SCREEN
+═══════════════════════════════════════ */
+function buildNickScreen() {
+  const users = getAllUsers();
+  const nicks = Object.keys(users);
+  const listEl = document.getElementById('nickList');
+  if (!nicks.length) { listEl.innerHTML = ''; return; }
+  listEl.innerHTML = `<div class="nick-list-title">Usuarios existentes:</div>
+    <div class="nick-chips">${nicks.map(n=>`<span class="nick-chip" onclick="document.getElementById('nickInput').value='${n}'">${n}</span>`).join('')}</div>`;
+}
+document.getElementById('btnNickEnter').addEventListener('click', () => {
+  const nick = document.getElementById('nickInput').value.trim();
+  const err = document.getElementById('nickError');
+  if (!nick) { err.textContent='Ingresa un nombre de usuario.'; return; }
+  if (nick.length < 2) { err.textContent='Al menos 2 caracteres.'; return; }
+  if (!/^[a-zA-Z0-9_\-áéíóúÁÉÍÓÚñÑ ]+$/.test(nick)) { err.textContent='Solo letras, números, guiones y espacios.'; return; }
+  err.textContent = '';
+  let user = getUser(nick);
+  if (!user) { user = newUser(nick); saveUser(nick, user); }
+  else { user.lastSeen = Date.now(); saveUser(nick, user); }
+  state.nick = nick;
+  document.getElementById('headerNickDisplay').textContent = '👤 '+nick;
+  buildHome();
+  showScreen('screenHome');
+  SFX.start();
+});
+document.getElementById('nickInput').addEventListener('keydown', e => { if (e.key==='Enter') document.getElementById('btnNickEnter').click(); });
+
+/* ═══════════════════════════════════════
+   HOME
+═══════════════════════════════════════ */
+function buildHome() {
+  const user = getUser(state.nick) || {};
+  const done = user.worldsDone || [];
+  let totalLevels = 0;
+  WORLDS.forEach(w => totalLevels += w.levels.length);
+  document.getElementById('statLevels').textContent = totalLevels;
+  document.getElementById('statDone').textContent = done.length;
+  document.getElementById('statScore').textContent = (user.score||0).toLocaleString();
+
+  const grid = document.getElementById('worldsGrid');
+  grid.innerHTML = '';
+  WORLDS.forEach(w => {
+    const isDone = done.includes(w.id);
+    const card = document.createElement('div');
+    card.className = 'world-card';
+    card.style.setProperty('--wc', w.color);
+    card.innerHTML = `
+      <div class="world-number">Mundo ${w.id}</div>
+      <span class="world-icon-wrap">${w.icon}</span>
+      <div class="world-name">${w.name}</div>
+      <div class="world-desc">${w.desc}</div>
+      <div class="world-footer">
+        <span class="badge">🎮 ${w.levels.length} retos</span>
+        ${isDone?`<span class="badge done">✅ ${(user.worldScores||{})[w.id]||0} pts</span>`:''}
+      </div>
+    `;
+    card.addEventListener('click', () => openLesson(w));
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════
+   LESSON
+═══════════════════════════════════════ */
+function openLesson(world) {
+  SFX.start();
+  state.currentWorld = world;
+  state.currentLevelIndex = 0;
+  state.score = 0;
+  state.lives = 3;
+  document.getElementById('lessonBadge').textContent = world.icon;
+  document.getElementById('lessonTitle').textContent = `Mundo ${world.id}: ${world.name}`;
+  document.getElementById('lessonIntro').textContent = world.intro;
+  document.getElementById('lessonKeyText').textContent = world.key;
+  // Code example
+  const ceEl = document.getElementById('lessonCodeExample');
+  if (world.codeExample) {
+    ceEl.innerHTML = `<div class="code-example"><div class="code-lang">Java</div><pre>${escHtml(world.codeExample)}</pre></div>`;
+  } else { ceEl.innerHTML = ''; }
+  // Concepts
+  const grid = document.getElementById('conceptsGrid');
+  grid.innerHTML = '';
+  world.concepts.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'concept-chip';
+    chip.innerHTML = `<div class="c-icon">${c.icon}</div><div class="c-name">${c.name}</div><div class="c-desc">${c.desc}</div>`;
+    grid.appendChild(chip);
+  });
+  showScreen('screenLesson');
+}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ═══════════════════════════════════════
+   GAME
+═══════════════════════════════════════ */
+function startGame() { showScreen('screenGame'); loadLevel(); }
+
+function loadLevel() {
+  const world = state.currentWorld;
+  const lvl = world.levels[state.currentLevelIndex];
+  state.answered = false; state.matchState = null; state.dragState = null;
+  document.getElementById('gameWorldLabel').textContent = `${world.icon} Mundo ${world.id}`;
+  document.getElementById('gameLevelLabel').textContent = `Reto ${state.currentLevelIndex+1} / ${world.levels.length}`;
+  document.getElementById('progressFill').style.width = (state.currentLevelIndex/world.levels.length*100)+'%';
+  updateHUD();
+  document.getElementById('missionTag').textContent = lvl.mission;
+  document.getElementById('gameQuestion').textContent = lvl.question;
+  const fragEl = document.getElementById('gameFragment');
+  if (lvl.type==='fill'||lvl.type==='tf') { fragEl.style.display='none'; }
+  else { fragEl.style.display=''; fragEl.textContent = lvl.fragment||''; }
+  document.getElementById('hintText').textContent = lvl.hint;
+  document.getElementById('gameHint').style.display = lvl.hint ? '' : 'none';
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  if (lvl.type==='mc'||!lvl.type) renderMC(lvl, container);
+  else if (lvl.type==='match') renderMatch(lvl, container);
+  else if (lvl.type==='drag') renderDrag(lvl, container);
+  else if (lvl.type==='fill') renderFill(lvl, container);
+  else if (lvl.type==='tf') renderTF(lvl, container);
+  clearInterval(state.timerInterval);
+  state.timerSeconds = lvl.time||60; state.timerMax = state.timerSeconds;
+  updateTimerUI();
+  state.timerInterval = setInterval(tickTimer, 1000);
+}
+
+/* MC */
+function renderMC(lvl, container) {
+  const grid = document.createElement('div'); grid.className='options-grid';
+  const letters = ['A','B','C','D'];
+  lvl.options.forEach((opt,i) => {
+    const btn = document.createElement('button'); btn.className='option-btn';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+    btn.addEventListener('click', () => { SFX.select(); selectMC(i, btn, lvl); });
+    grid.appendChild(btn);
+  });
+  container.appendChild(grid);
+}
+function selectMC(idx, btn, lvl) {
+  if (state.answered) return;
+  state.answered = true; clearInterval(state.timerInterval);
+  const allBtns = document.querySelectorAll('.option-btn');
+  allBtns.forEach(b => b.disabled=true);
+  allBtns[lvl.correct].classList.add('correct');
+  if (idx===lvl.correct) {
+    state.score += 100 + Math.floor(state.timerSeconds*1.5);
+    btn.classList.add('correct'); SFX.correct(); startConfetti();
+    showFeedback(true,'✅ ¡Correcto!',lvl.explanation,lvl.remember,false);
+  } else {
+    btn.classList.add('wrong'); state.lives--; SFX.wrong(); updateHUD();
+    showFeedback(false,'❌ Incorrecto',lvl.explanation,lvl.remember,false);
+  }
+}
+
+/* TF */
+function renderTF(lvl, container) {
+  const wrap = document.createElement('div'); wrap.className='tf-wrap';
+  ['✅ VERDADERO','❌ FALSO'].forEach((label,i) => {
+    const btn = document.createElement('button'); btn.className='tf-btn';
+    btn.textContent = label;
+    btn.addEventListener('click', () => { SFX.select(); selectTF(i===0, btn, wrap, lvl); });
+    wrap.appendChild(btn);
+  });
+  container.appendChild(wrap);
+}
+function selectTF(selected, btn, wrap, lvl) {
+  if (state.answered) return;
+  state.answered = true; clearInterval(state.timerInterval);
+  wrap.querySelectorAll('.tf-btn').forEach(b => b.disabled=true);
+  if (selected===lvl.correct) {
+    btn.classList.add('correct'); state.score += 80+Math.floor(state.timerSeconds*1.2);
+    SFX.correct(); startConfetti();
+    showFeedback(true,'✅ ¡Correcto!',lvl.explanation,lvl.remember,false);
+  } else {
+    btn.classList.add('wrong'); state.lives--; SFX.wrong(); updateHUD();
+    const correctBtn = wrap.querySelectorAll('.tf-btn')[lvl.correct?0:1];
+    correctBtn.classList.add('correct');
+    showFeedback(false,'❌ Incorrecto',lvl.explanation,lvl.remember,false);
+  }
+}
+
+/* MATCH */
+function renderMatch(lvl, container) {
+  const shuffT = [...lvl.pairs].sort(()=>Math.random()-.5);
+  const shuffD = [...lvl.pairs].sort(()=>Math.random()-.5);
+  state.matchState = { matched:new Set(), selectedTerm:null, selectedDef:null, pairs:lvl.pairs };
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="match-grid">
+      <div class="match-col">
+        <div class="match-label">Conceptos</div>
+        ${shuffT.map((p,i)=>`<div class="match-item" data-term="${escAttr(p.term)}" id="mt_${i}" onclick="matchClick('term','${escAttr(p.term)}',this)">${p.term}</div>`).join('')}
+      </div>
+      <div class="match-col">
+        <div class="match-label">Definiciones</div>
+        ${shuffD.map((p,i)=>`<div class="match-item" data-def="${escAttr(p.def)}" id="md_${i}" onclick="matchClick('def','${escAttr(p.def)}',this)">${p.def}</div>`).join('')}
+      </div>
+    </div>
+    <p class="match-hint-line" id="matchProgress">Empareja todos los conceptos (0/${lvl.pairs.length})</p>`;
+  container.appendChild(wrap);
+}
+function escAttr(s) { return s.replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function matchClick(type, value, el) {
+  if (state.answered) return;
+  const ms = state.matchState;
+  if (el.classList.contains('matched')) return;
+  SFX.select();
+  if (type==='term') {
+    document.querySelectorAll('.match-item[data-term]').forEach(e=>e.classList.remove('selected'));
+    ms.selectedTerm=value; el.classList.add('selected');
+  } else {
+    document.querySelectorAll('.match-item[data-def]').forEach(e=>e.classList.remove('selected'));
+    ms.selectedDef=value; el.classList.add('selected');
+  }
+  if (ms.selectedTerm && ms.selectedDef) {
+    const ok = ms.pairs.find(p=>p.term===ms.selectedTerm && p.def===ms.selectedDef);
+    if (ok) {
+      SFX.correct();
+      document.querySelectorAll(`[data-term="${escAttr(ms.selectedTerm)}"]`).forEach(e=>{e.classList.remove('selected');e.classList.add('matched');});
+      document.querySelectorAll(`[data-def="${escAttr(ms.selectedDef)}"]`).forEach(e=>{e.classList.remove('selected');e.classList.add('matched');});
+      ms.matched.add(ms.selectedTerm); ms.selectedTerm=null; ms.selectedDef=null;
+      const prog=document.getElementById('matchProgress');
+      if (prog) prog.textContent=`Emparejados: ${ms.matched.size}/${ms.pairs.length}`;
+      if (ms.matched.size===ms.pairs.length) {
+        clearInterval(state.timerInterval); state.answered=true;
+        state.score += 150+Math.floor(state.timerSeconds*1.5);
+        startConfetti();
+        const lvl=state.currentWorld.levels[state.currentLevelIndex];
+        showFeedback(true,'✅ ¡Perfecto!',lvl.explanation,lvl.remember,false);
+      }
+    } else {
+      SFX.wrong();
+      const tEl=document.querySelector(`[data-term="${escAttr(ms.selectedTerm)}"]`);
+      const dEl=document.querySelector(`[data-def="${escAttr(ms.selectedDef)}"]`);
+      if (tEl){tEl.classList.add('wrong-match');setTimeout(()=>tEl.classList.remove('wrong-match','selected'),700);}
+      if (dEl){dEl.classList.add('wrong-match');setTimeout(()=>dEl.classList.remove('wrong-match','selected'),700);}
+      state.lives--; updateHUD(); ms.selectedTerm=null; ms.selectedDef=null;
+      if (state.lives<=0) {
+        clearInterval(state.timerInterval); state.answered=true;
+        const lvl=state.currentWorld.levels[state.currentLevelIndex];
+        showFeedback(false,'💀 Sin vidas',lvl.explanation,lvl.remember,false);
+      }
+    }
+  }
+}
+
+/* DRAG */
+let dragIdx2 = null;
+function renderDrag(lvl, container) {
+  const shuffled = [...lvl.items].sort(()=>Math.random()-.5);
+  state.dragState = { placed:{}, items:lvl.items, categories:lvl.categories };
+  let catHTML = lvl.categories.map((cat,ci)=>`
+    <div class="drag-category">
+      <div class="drag-cat-name">${cat}</div>
+      <div class="drag-area" id="dcat_${ci}"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="dropDrag(event,${ci})"></div>
+    </div>`).join('');
+  let itemsHTML = shuffled.map(item=>{
+    const idx=lvl.items.indexOf(item);
+    return `<div class="drag-item" draggable="true" data-idx="${idx}" id="ditem_${idx}" ondragstart="dragStart2(event,${idx})">${item.text}</div>`;
+  }).join('');
+  const wrap = document.createElement('div');
+  wrap.innerHTML=`<div class="drag-source" id="dsource">${itemsHTML}</div>${catHTML}
+    <button class="primary-btn check-btn" onclick="checkDrag2()">✅ Verificar clasificación</button>`;
+  container.appendChild(wrap);
+}
+function dragStart2(e,idx){dragIdx2=idx;}
+function dropDrag(e,ci){
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  if (dragIdx2===null) return;
+  const item=document.getElementById('ditem_'+dragIdx2);
+  if (!item) return;
+  SFX.select(); state.dragState.placed[dragIdx2]=ci; item.classList.add('placed');
+  e.currentTarget.appendChild(item); dragIdx2=null;
+}
+function checkDrag2(){
+  if (state.answered) return;
+  const ds=state.dragState;
+  if (Object.keys(ds.placed).length!==ds.items.length) return;
+  clearInterval(state.timerInterval); state.answered=true;
+  let allOk=true;
+  ds.items.forEach((item,i)=>{
+    const el=document.getElementById('ditem_'+i);
+    if (ds.placed[i]===item.correct){if(el)el.classList.add('placed');}
+    else{allOk=false;if(el){el.classList.remove('placed');el.classList.add('wrong-placed');}}
+  });
+  const lvl=state.currentWorld.levels[state.currentLevelIndex];
+  if (allOk){
+    state.score+=120+Math.floor(state.timerSeconds*1.5);SFX.correct();startConfetti();
+    showFeedback(true,'✅ ¡Clasificación correcta!',lvl.explanation,lvl.remember,false);
+  } else {
+    state.lives--;SFX.wrong();updateHUD();
+    showFeedback(false,'❌ Clasificación incorrecta',lvl.explanation,lvl.remember,false);
+  }
+}
+
+/* FILL */
+function renderFill(lvl, container) {
+  let text = escHtml(lvl.fragment);
+  lvl.blanks.forEach((blank,i)=>{
+    text=text.replace('[BLANK]',`<input class="fill-input" id="fill_${i}" placeholder="${blank.placeholder}" autocomplete="off" spellcheck="false"/>`);
+  });
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`<div class="fill-blank-wrap"><div class="fill-text">${text}</div></div>
+    <button class="primary-btn check-btn" onclick="checkFill2()">✅ Verificar respuesta</button>`;
+  container.appendChild(wrap);
+}
+function checkFill2(){
+  if (state.answered) return;
+  const lvl=state.currentWorld.levels[state.currentLevelIndex];
+  let allOk=true;
+  lvl.blanks.forEach((blank,i)=>{
+    const inp=document.getElementById('fill_'+i);
+    if (!inp) return;
+    const val=inp.value.trim().toLowerCase();
+    const ans=blank.answer.toLowerCase();
+    if (val===ans||val===ans.replace(/[()]/g,'')){inp.classList.add('correct');}
+    else{allOk=false;inp.classList.add('wrong');}
+  });
+  clearInterval(state.timerInterval); state.answered=true;
+  if (allOk){
+    state.score+=100+Math.floor(state.timerSeconds*1.5);SFX.correct();startConfetti();
+    showFeedback(true,'✅ ¡Correcto!',lvl.explanation,lvl.remember,false);
+  } else {
+    state.lives--;SFX.wrong();updateHUD();
+    showFeedback(false,'❌ Incorrecto',`Respuesta correcta: "${lvl.blanks.map(b=>b.answer).join(', ')}". ${lvl.explanation}`,lvl.remember,false);
+  }
+}
+
+/* TIMER */
+function tickTimer(){
+  state.timerSeconds--; updateTimerUI();
+  if (state.timerSeconds<=10){SFX.alert();document.getElementById('timerDisplay').classList.add('urgent');document.getElementById('timerFill').classList.add('urgent');}
+  if (state.timerSeconds<=0){
+    clearInterval(state.timerInterval);
+    if (!state.answered){
+      state.answered=true; state.lives--; updateHUD();
+      showFeedback(false,'⏰ Tiempo agotado','No respondiste a tiempo. ¡Recuerda leer bien antes de responder!',state.currentWorld.levels[state.currentLevelIndex].remember,true);
+    }
+  }
+}
+function updateTimerUI(){
+  const pct=(state.timerSeconds/state.timerMax)*100;
+  document.getElementById('timerFill').style.width=pct+'%';
+  document.getElementById('timerDisplay').textContent=state.timerSeconds;
+  if (state.timerSeconds>10){document.getElementById('timerDisplay').classList.remove('urgent');document.getElementById('timerFill').classList.remove('urgent');}
+}
+function updateHUD(){
+  document.getElementById('scoreDisplay').textContent=state.score;
+  const lEl=document.getElementById('livesDisplay'); lEl.innerHTML='';
+  for (let i=0;i<3;i++){const h=document.createElement('span');h.textContent=i<state.lives?'❤️':'🖤';lEl.appendChild(h);}
+}
+
+/* FEEDBACK MODAL */
+function showFeedback(correct, title, body, remember, timeOut){
+  const modal=document.getElementById('feedbackModal');
+  const card=document.getElementById('modalCard');
+  document.getElementById('modalEmoji').textContent=correct?'🎉':(timeOut?'⏰':'💡');
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').textContent=body||'';
+  document.getElementById('modalRemember').textContent=remember||'';
+  document.getElementById('btnModalNext').textContent=correct?'¡Siguiente reto! →':'Continuar →';
+  card.className='modal-card '+(correct?'correct-modal':'wrong-modal');
+  modal.classList.remove('hidden');
+}
+document.getElementById('btnModalNext').addEventListener('click', ()=>{
+  document.getElementById('feedbackModal').classList.add('hidden');
+  if (state.lives<=0){
+    document.getElementById('worldDoneModal').classList.remove('hidden');
+    document.getElementById('worldDoneStars').textContent='💔';
+    document.getElementById('worldDoneScore').textContent=state.score+' pts';
+    document.getElementById('worldDoneMsg').textContent=`¡Mejor suerte la próxima! Terminaste "${state.currentWorld.name}" con ${state.score} puntos.`;
+    return;
+  }
+  state.currentLevelIndex++;
+  if (state.currentLevelIndex>=state.currentWorld.levels.length){
+    // World complete
+    clearInterval(state.timerInterval);
+    const user=getUser(state.nick)||newUser(state.nick);
+    if (!user.worldsDone.includes(state.currentWorld.id)) user.worldsDone.push(state.currentWorld.id);
+    user.score=(user.score||0)+state.score;
+    user.attempts=(user.attempts||0)+1;
+    if (!(user.worldScores||{})[state.currentWorld.id]||(user.worldScores[state.currentWorld.id]<state.score))
+      (user.worldScores=user.worldScores||{})[state.currentWorld.id]=state.score;
+    saveUser(state.nick, user);
+    const stars=state.score>600?'⭐⭐⭐':state.score>350?'⭐⭐':'⭐';
+    document.getElementById('worldDoneStars').textContent=stars;
+    document.getElementById('worldDoneScore').textContent=state.score+' pts';
+    document.getElementById('worldDoneMsg').textContent=`¡Completaste "${state.currentWorld.name}"! Sumaste ${state.score} puntos a tu perfil. 🚀`;
+    document.getElementById('worldDoneModal').classList.remove('hidden');
+    SFX.done(); startConfetti();
+  } else { loadLevel(); }
+});
+document.getElementById('btnWorldDone').addEventListener('click', ()=>{
+  document.getElementById('worldDoneModal').classList.add('hidden');
+  stopConfetti(); clearInterval(state.timerInterval);
+  buildHome(); showScreen('screenHome');
+});
+
+/* ═══════════════════════════════════════
+   RANKING
+═══════════════════════════════════════ */
+let rankTab='score';
+function showRankTab(tab){
+  rankTab=tab;
+  document.getElementById('tabScore').classList.toggle('active',tab==='score');
+  document.getElementById('tabWorlds').classList.toggle('active',tab==='worlds');
+  document.getElementById('tabAttempts').classList.toggle('active',tab==='attempts');
+  buildRanking();
+}
+function buildRanking(){
+  const users=getAllUsers();
+  const list=Object.values(users);
+  if (rankTab==='score') list.sort((a,b)=>b.score-a.score);
+  else if (rankTab==='worlds') list.sort((a,b)=>(b.worldsDone||[]).length-(a.worldsDone||[]).length||b.score-a.score);
+  else list.sort((a,b)=>(b.attempts||0)-(a.attempts||0));
+  const medals=['🥇','🥈','🥉'];
+  const content=document.getElementById('rankingContent');
+  if (!list.length){content.innerHTML='<div class="empty-rank">🏆 No hay usuarios aún. ¡Sé el primero!</div>';return;}
+  content.innerHTML=`<table class="rank-table"><thead><tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Mundos</th><th>Intentos</th></tr></thead><tbody>
+    ${list.map((u,i)=>`<tr class="${u.nick===state.nick?'rank-you':''}">
+      <td class="rank-pos">${medals[i]||'#'+(i+1)}</td>
+      <td class="rank-nick">${u.nick}${u.nick===state.nick?' 👈':''}</td>
+      <td class="rank-score">${(u.score||0).toLocaleString()}</td>
+      <td class="rank-worlds">${(u.worldsDone||[]).length}/${WORLDS.length} 🌍</td>
+      <td class="rank-worlds">${u.attempts||0}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+/* ═══════════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════════ */
+const ADMIN_PASS = 'admin123';
+let adminUnlocked = false;
+function buildAdminPanel(){
+  const users=getAllUsers();
+  const list=Object.values(users);
+  const totalScore=list.reduce((a,b)=>a+(b.score||0),0);
+  const totalWorlds=list.reduce((a,b)=>a+(b.worldsDone||[]).length,0);
+  document.getElementById('adminContent').innerHTML=`
+    <div class="admin-wrap">
+      <h2 style="font-size:2rem;font-weight:900;margin-bottom:.3rem">Panel Administrador</h2>
+      <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:2rem">Estadísticas y gestión de usuarios</p>
+      <div class="admin-grid">
+        <div class="stat-card"><div class="sc-num">${list.length}</div><div class="sc-label">Usuarios</div></div>
+        <div class="stat-card"><div class="sc-num">${totalScore.toLocaleString()}</div><div class="sc-label">Puntos Totales</div></div>
+        <div class="stat-card"><div class="sc-num">${totalWorlds}</div><div class="sc-label">Mundos Completados</div></div>
+        <div class="stat-card"><div class="sc-num">${WORLDS.length}</div><div class="sc-label">Mundos Disponibles</div></div>
+      </div>
+      <div class="section-title-admin">👥 Gestión de Usuarios</div>
+      <div style="margin-bottom:1rem">
+        <button class="danger-btn" onclick="resetAllUsers()" style="padding:.5rem 1.2rem;font-size:.85rem">⚠️ Resetear TODOS</button>
+      </div>
+      ${!list.length?'<p style="color:var(--text-muted)">Sin usuarios registrados.</p>':
+        list.sort((a,b)=>(b.score||0)-(a.score||0)).map(u=>`
+          <div class="user-row">
+            <div class="user-row-nick">${u.nick}</div>
+            <div class="user-row-score">🏆 ${(u.score||0).toLocaleString()}</div>
+            <div class="user-row-worlds">🌍 ${(u.worldsDone||[]).length}/${WORLDS.length}</div>
+            <div class="user-row-actions">
+              <button class="warn-btn" onclick="resetUserScore('${u.nick}')">Reset</button>
+              <button class="danger-btn" onclick="deleteUser('${u.nick}')">Eliminar</button>
+            </div>
+          </div>`).join('')}
+    </div>`;
+}
+function resetAllUsers(){if(!confirm('¿Resetear TODOS los datos?'))return;saveUsers({});buildAdminPanel();}
+function resetUserScore(nick){const u=getAllUsers();if(u[nick]){u[nick].score=0;u[nick].worldsDone=[];u[nick].worldScores={};saveUsers(u);buildAdminPanel();}}
+function deleteUser(nick){if(!confirm(`¿Eliminar "${nick}"?`))return;const u=getAllUsers();delete u[nick];saveUsers(u);buildAdminPanel();}
+document.getElementById('btnAdminPass').addEventListener('click',()=>{
+  const val=document.getElementById('adminPassInput').value;
+  const err=document.getElementById('adminPassError');
+  if (val===ADMIN_PASS){adminUnlocked=true;err.textContent='';buildAdminPanel();}
+  else{err.textContent='Contraseña incorrecta.';document.getElementById('adminPassInput').value='';}
+});
+document.getElementById('adminPassInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btnAdminPass').click();});
+
+/* ═══════════════════════════════════════
+   NAV BUTTONS
+═══════════════════════════════════════ */
+document.getElementById('btnLessonBack').addEventListener('click',()=>showScreen('screenHome'));
+document.getElementById('btnStartWorld').addEventListener('click',startGame);
+document.getElementById('btnGameHome').addEventListener('click',()=>{clearInterval(state.timerInterval);buildHome();showScreen('screenHome');});
+document.getElementById('btnTheme').addEventListener('click',toggleTheme);
+document.getElementById('btnSound').addEventListener('click',function(){toggleSound(this);});
+document.getElementById('btnGameSound').addEventListener('click',function(){state.soundOn=!state.soundOn;this.textContent=state.soundOn?'🔊':'🔇';document.getElementById('btnSound').textContent=this.textContent;});
+document.getElementById('btnLogout').addEventListener('click',()=>{state.nick=null;buildNickScreen();showScreen('screenNick');});
+document.getElementById('btnRanking').addEventListener('click',()=>{buildRanking();showScreen('screenRanking');});
+document.getElementById('btnRankingBack').addEventListener('click',()=>showScreen('screenHome'));
+document.getElementById('btnAdmin').addEventListener('click',()=>{
+  if (!adminUnlocked){
+    document.getElementById('adminContent').innerHTML=`<div class="pass-screen"><div class="pass-card">
+      <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
+      <h3 style="font-size:1.5rem;font-weight:800;margin-bottom:.5rem">Acceso Administrador</h3>
+      <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:1.5rem">Ingresa la contraseña para continuar.</p>
+      <input class="nick-input" id="adminPassInput" type="password" placeholder="Contraseña..."/>
+      <div class="nick-error" id="adminPassError"></div>
+      <button class="primary-btn" id="btnAdminPass">Acceder</button>
+    </div></div>`;
+    document.getElementById('btnAdminPass').addEventListener('click',()=>{
+      const val=document.getElementById('adminPassInput').value;
+      const err=document.getElementById('adminPassError');
+      if(val===ADMIN_PASS){adminUnlocked=true;err.textContent='';buildAdminPanel();}
+      else{err.textContent='Contraseña incorrecta.';document.getElementById('adminPassInput').value='';}
+    });
+    document.getElementById('adminPassInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btnAdminPass').click();});
+  } else {buildAdminPanel();}
+  showScreen('screenAdmin');
+});
+document.getElementById('btnAdminBack').addEventListener('click',()=>showScreen('screenHome'));
+document.getElementById('btnCredits').addEventListener('click',()=>showScreen('screenCredits'));
+document.getElementById('btnCreditsBack').addEventListener('click',()=>showScreen('screenHome'));
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+function init(){
+  buildAmbient();
+  buildNickScreen();
+  showScreen('screenNick');
+}
+init();
+</script>
+<script
+  src='https://cdn.jotfor.ms/agent/embedjs/019e708cab007c28b69547784337f74d17ec/embed.js?autoOpenChatIn=1'>
+</script>
+</body>
+</html>
