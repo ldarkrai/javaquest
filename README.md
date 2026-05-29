@@ -42,7 +42,7 @@ Dado que el proyecto no usa un backend, probarlo localmente es sumamente rápido
 
 1. Clona este repositorio:
    ```bash
-   git clone [https://github.com/ldarkrai/javaquest.git](https://github.com/ldarkrai/javaquest.git)
+   git clone https://github.com/ldarkrai/javaquest.git
 
 ```
 
